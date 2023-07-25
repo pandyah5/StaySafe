@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -65,6 +68,7 @@ fun HomeScreen(userLoc : String){
                     modifier = Modifier.padding(all = 8.dp),
                     style = MaterialTheme.typography.titleLarge
                 )
+
                 Spacer(Modifier.weight(1f))
 
                 // Sponsor Button
@@ -78,13 +82,23 @@ fun HomeScreen(userLoc : String){
             }
         }
 
+        Spacer(modifier = Modifier.height(40.dp))
+
         // A rounded text bar for current location with refresh icon
-        Surface {
-            Row {
+        Surface (shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp){
+            Row (modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End) {
                 Text (
+                    modifier = Modifier.padding(all = 8.dp),
+                    style = MaterialTheme.typography.titleLarge,
                     text = "$userLoc"
                 )
-                Button (onClick= {}) {
+
+                Spacer(Modifier.weight(1f))
+
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
                     Image (
                         painterResource(id = R.drawable.refresh),
                         contentDescription ="Refresh icon",
@@ -92,7 +106,6 @@ fun HomeScreen(userLoc : String){
                     )
                 }
             }
-
         }
 
         // Message indicating the safety of current location
