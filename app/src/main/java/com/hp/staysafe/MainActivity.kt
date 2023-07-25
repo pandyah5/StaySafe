@@ -3,6 +3,7 @@ package com.hp.staysafe
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import com.hp.staysafe.ui.theme.StaySafeTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen("Bay and College St")
+                    HomeScreen("Bay and College St", "Your current location is safe :)")
                 }
             }
         }
@@ -50,11 +52,11 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen("Bay and College St")
+    HomeScreen("Bay and College St", "Your current location is safe :)")
 }
 
 @Composable
-fun HomeScreen(userLoc : String){
+fun HomeScreen(userLoc: String, safetyAnalysis: String){
     Column {
         // An upper bar for app name and sponsor
         Surface(shadowElevation = 1.dp) {
@@ -69,6 +71,7 @@ fun HomeScreen(userLoc : String){
                     style = MaterialTheme.typography.titleLarge
                 )
 
+                // Make the App Name left aligned
                 Spacer(Modifier.weight(1f))
 
                 // Sponsor Button
@@ -85,7 +88,10 @@ fun HomeScreen(userLoc : String){
         Spacer(modifier = Modifier.height(40.dp))
 
         // A rounded text bar for current location with refresh icon
-        Surface (shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp){
+        Surface (shape = MaterialTheme.shapes.medium,
+                 shadowElevation = 1.dp,
+                 border = BorderStroke(2.dp,Color.Blue)
+        ){
             Row (modifier = Modifier
                 .padding(20.dp)
                 .fillMaxWidth(),
@@ -108,7 +114,21 @@ fun HomeScreen(userLoc : String){
             }
         }
 
+        Spacer(modifier = Modifier.height(80.dp))
+
         // Message indicating the safety of current location
+        Row (modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()) {
+            Text(
+                text = "$safetyAnalysis",
+                modifier = Modifier.padding(all = 8.dp),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.height(80.dp))
 
         // Tips: Which location too avoid at given time
 
