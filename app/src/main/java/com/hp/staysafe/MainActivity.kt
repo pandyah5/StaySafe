@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,7 +43,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen("Bay and College St", "Your current location is safe :)")
+                    HomeScreen("Bay and College St",
+                           "Your current location is safe :)",
+                              "Avoid travelling to Sherbourne and Jarvis right now",
+                            "26th July, 2023")
                 }
             }
         }
@@ -52,12 +56,19 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen("Bay and College St", "Your current location is safe :)")
+    HomeScreen("Bay and College St",
+           "Your current location is safe :)",
+              "Avoid travelling to Sherbourne and Jarvis right now",
+            "26th July, 2023")
 }
 
 @Composable
-fun HomeScreen(userLoc: String, safetyAnalysis: String){
-    Column {
+fun HomeScreen(userLoc: String,
+               safetyAnalysis: String,
+               safetyTip: String,
+               lastUpdated: String){
+    Column (Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween) {
         // An upper bar for app name and sponsor
         Surface(shadowElevation = 1.dp) {
             Row (modifier = Modifier
@@ -66,7 +77,7 @@ fun HomeScreen(userLoc: String, safetyAnalysis: String){
                 horizontalArrangement = Arrangement.End) {
                 // App Name
                 Text (
-                    text = "App Name",
+                    text = "Toronto Guard",
                     modifier = Modifier.padding(all = 8.dp),
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -75,11 +86,11 @@ fun HomeScreen(userLoc: String, safetyAnalysis: String){
                 Spacer(Modifier.weight(1f))
 
                 // Sponsor Button
-                Button (onClick= {}) {
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)) {
                     Image (
                         painterResource(id = R.drawable.heart_icon),
                         contentDescription ="Sponsor heart icon",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }
@@ -128,10 +139,31 @@ fun HomeScreen(userLoc: String, safetyAnalysis: String){
             )
         }
 
-        Spacer(modifier = Modifier.height(80.dp))
+        // Spacer(modifier = Modifier.height(30.dp))
 
         // Tips: Which location too avoid at given time
+        Row (modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()) {
+            Text(
+                text = "$safetyTip",
+                modifier = Modifier.padding(all = 8.dp),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
 
-        // Call 911 button at the bottom of the screen
+        // Disclaimer
+        Row (modifier = Modifier
+            .weight(1f, false)
+            .padding(20.dp)
+            .fillMaxWidth()) {
+            Text(
+                text = "The information above is based on the official data provided by Toronto Police Service Public Safety Data Portal as of $lastUpdated",
+                modifier = Modifier.padding(all = 8.dp),
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
