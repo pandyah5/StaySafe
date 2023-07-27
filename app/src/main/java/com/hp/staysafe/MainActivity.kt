@@ -18,34 +18,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.hp.staysafe.ui.theme.StaySafeTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.hp.staysafe.ui.theme.StaySafeTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.FontLoadingStrategy.Companion.Async
+import kotlinx.coroutines.Dispatchers
 
 class MainActivity : ComponentActivity() {
-
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Get live location of the user
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        fetchLocation()
+        val location_retrieved = fetchLocation()
 
         setContent {
             StaySafeTheme {
@@ -62,14 +62,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun fetchLocation() {
+    private fun fetchLocation(): Boolean {
         val task = fusedLocationProviderClient.lastLocation
 
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-            return
+            return false
         }
         task.addOnSuccessListener {
             if (it != null){
@@ -80,6 +80,7 @@ class MainActivity : ComponentActivity() {
                 println("Longitude: ${it.longitude}")
             }
         }
+        return true
     }
 }
 
@@ -109,6 +110,10 @@ fun PreviewHomeScreen() {
 fun HomeScreen(safetyAnalysis: String,
                safetyTip: String,
                lastUpdated: String){
+    println("Building Homescreen!")
+    var lat by remember { mutableStateOf("Current latitude")}
+    var lon by remember { mutableStateOf("Current longitude")}
+
     Column (Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween) {
         // An upper bar for app name and sponsor
@@ -132,7 +137,7 @@ fun HomeScreen(safetyAnalysis: String,
                     Image (
                         painterResource(id = R.drawable.heart_icon),
                         contentDescription ="Sponsor heart icon",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(30.dp),
                     )
                 }
             }
@@ -149,15 +154,18 @@ fun HomeScreen(safetyAnalysis: String,
                 .padding(20.dp)
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End) {
+                var latitude by remember { mutableStateOf("Latitude") }
+                var longitude by remember { mutableStateOf("Longitude") }
                 Text (
                     modifier = Modifier.padding(all = 8.dp),
                     style = MaterialTheme.typography.titleLarge,
-                    text = "${GPSLocation.getLat()}, ${GPSLocation.getLon()}"
+                    text = "$latitude, $longitude"
                 )
 
                 Spacer(Modifier.weight(1f))
 
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                Button (onClick= {latitude = GPSLocation.getLat().toBigDecimal().toPlainString();longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
                     Image (
                         painterResource(id = R.drawable.refresh),
                         contentDescription ="Refresh icon",
