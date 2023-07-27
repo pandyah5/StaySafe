@@ -35,8 +35,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hp.staysafe.ui.theme.StaySafeTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.text.font.FontLoadingStrategy.Companion.Async
-import kotlinx.coroutines.Dispatchers
+import java.text.SimpleDateFormat
+import java.util.Date
+
 
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -46,6 +47,13 @@ class MainActivity : ComponentActivity() {
         // Get live location of the user
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val location_retrieved = fetchLocation()
+
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val currentDateTime = sdf.format(Date())
+        var parseFailed = !parseDateTime(currentDateTime)
+        if (parseFailed) {
+            println(">>> ERROR: The date parsing failed!")
+        }
 
         setContent {
             StaySafeTheme {
@@ -69,6 +77,7 @@ class MainActivity : ComponentActivity() {
             && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
+            println(">>> ERROR: Failed to fetch location!")
             return false
         }
         task.addOnSuccessListener {
@@ -76,8 +85,6 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
                 GPSLocation.setLat(it.latitude)
                 GPSLocation.setLon(it.longitude)
-                println("Latitude: ${it.latitude}")
-                println("Longitude: ${it.longitude}")
             }
         }
         return true
@@ -96,6 +103,35 @@ object GPSLocation {
     // Set functions
     fun setLat(Lat: Double) { latitude = Lat }
     fun setLon(Lon: Double) { longitude = Lon }
+}
+
+object todayDate {
+    var year = 0
+    var month = 0
+    var day = 0
+    var hour = 0
+    var min = 0
+    var sec = 0
+}
+
+// Returns false if it is unable to parse datetime otherwise stores info in todayDate
+fun parseDateTime(datetime: String) : Boolean{
+    val dateAndTime = datetime.split(" ")
+    if (dateAndTime.size != 2){ return false }
+    var date = dateAndTime[0].split('/')
+    var time = dateAndTime[1].split(':')
+
+    // Store date
+    todayDate.day = date[0].toInt()
+    todayDate.month = date[1].toInt()
+    todayDate.year = date[2].toInt()
+
+    // Store time
+    todayDate.hour = time[0].toInt()
+    todayDate.min = time[1].toInt()
+    todayDate.sec = time[2].toInt()
+
+    return true
 }
 
 @Preview
