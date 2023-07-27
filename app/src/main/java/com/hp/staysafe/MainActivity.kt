@@ -1,6 +1,8 @@
 package com.hp.staysafe
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -27,15 +29,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hp.staysafe.ui.theme.StaySafeTheme
-import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
+
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Get live location of the user
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        fetchLocation()
+
         setContent {
             StaySafeTheme {
                 // A surface container using the 'background' color from the theme
@@ -43,28 +54,59 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen("Bay and College St",
-                           "Your current location is safe :)",
+                    HomeScreen("Your current location is safe :)",
                               "Avoid travelling to Sherbourne and Jarvis right now",
                             "26th July, 2023")
                 }
             }
         }
     }
+
+    private fun fetchLocation() {
+        val task = fusedLocationProviderClient.lastLocation
+
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
+            return
+        }
+        task.addOnSuccessListener {
+            if (it != null){
+                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
+                GPSLocation.setLat(it.latitude)
+                GPSLocation.setLon(it.longitude)
+                println("Latitude: ${it.latitude}")
+                println("Longitude: ${it.longitude}")
+            }
+        }
+    }
+}
+
+// Static object to store the users live GPS coordinates
+object GPSLocation {
+    private var latitude: Double = 1.0
+    private var longitude: Double = -1.0
+
+    // Get functions
+    fun getLat() :Double { return latitude }
+    fun getLon() :Double { return longitude }
+
+    // Set functions
+    fun setLat(Lat: Double) { latitude = Lat }
+    fun setLon(Lon: Double) { longitude = Lon }
 }
 
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen("Bay and College St",
-           "Your current location is safe :)",
+    HomeScreen("Your current location is safe :)",
               "Avoid travelling to Sherbourne and Jarvis right now",
             "26th July, 2023")
 }
 
 @Composable
-fun HomeScreen(userLoc: String,
-               safetyAnalysis: String,
+fun HomeScreen(safetyAnalysis: String,
                safetyTip: String,
                lastUpdated: String){
     Column (Modifier.fillMaxHeight(),
@@ -77,7 +119,7 @@ fun HomeScreen(userLoc: String,
                 horizontalArrangement = Arrangement.End) {
                 // App Name
                 Text (
-                    text = "Toronto Guard",
+                    text = "Toronto Armour",
                     modifier = Modifier.padding(all = 8.dp),
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -110,7 +152,7 @@ fun HomeScreen(userLoc: String,
                 Text (
                     modifier = Modifier.padding(all = 8.dp),
                     style = MaterialTheme.typography.titleLarge,
-                    text = "$userLoc"
+                    text = "${GPSLocation.getLat()}, ${GPSLocation.getLon()}"
                 )
 
                 Spacer(Modifier.weight(1f))
