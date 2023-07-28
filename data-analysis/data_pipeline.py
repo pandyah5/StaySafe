@@ -40,12 +40,14 @@ data = data.groupby(["NEIGHBOURHOOD_158", "OCC_MONTH"], as_index=False)["FATALIT
 
 ## Create the Hood | Month | Rank table
 ## The logic for rank is as follows:
-#### A rank will be given for each hood based on how high its fatality score is.
-#### Rank 1: Indicates very low safety risk (0-31 lowest fatality score hoods)
-#### Rank 2: Indicates low safety risk (31-63 ")
-#### Rank 3: Indicates moderate safety risk (63-95 ")
-#### Rank 4: Indicates high safety risk (95-126 ")
-#### Rank 5: Indicates very high safety risk (126-158 ")
+#### A rank will be given for each hood based on how high its fatality score (FS) is relative to the hood with the highest FS
+#### To do so we divide each hood's FS for the month by the max observed FS during that month
+#### A value between 0-0.2: Very low safety risk
+#### A value between 0.2-0.4: Low safety risk
+#### A value between 0.4-0.6: Moderate safety risk
+#### A value between 0.6-0.8: High saftey risk
+#### A value between 0.8-1.0: Very high safety risk
+
 months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 hoods = data["NEIGHBOURHOOD_158"].unique()
 
@@ -71,8 +73,3 @@ for month in months:
   month_wise_db.clear()
   
 print(">>> Successfully generated csv files for all 12 months")
-
-## Export to CSV format
-csv_file = data.to_csv('neighbourhood_score_map.csv', index = True)
-
-data.head()
