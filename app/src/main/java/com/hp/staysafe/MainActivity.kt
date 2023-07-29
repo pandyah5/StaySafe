@@ -1,5 +1,6 @@
 package com.hp.staysafe
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -35,6 +36,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hp.staysafe.ui.theme.StaySafeTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
@@ -74,16 +78,31 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            StaySafeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    HomeScreen("Your current location is safe :)",
-                              "Avoid travelling to Sherbourne and Jarvis right now",
-                            "26th July, 2023")
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button (onClick = {
+                    val navigate = Intent(this@MainActivity, HomeScreen::class.java)
+                    startActivity(navigate)
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                    Image(
+                        painterResource(id = R.drawable.armourlogotransparent),
+                        contentDescription = "Armour logo",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
+
+                Text (text = "Toronto Armour", fontFamily = FontFamily.Serif, fontSize = 18.sp)
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                Text (text = "Pat Armour to continue")
+
+                Spacer(Modifier.weight(1f))
+
+                Text (text = "Hint: Armour is our four-legged friend!", fontFamily= FontFamily.Serif, fontSize = 10.sp)
             }
         }
     }
@@ -108,13 +127,6 @@ class MainActivity : ComponentActivity() {
         val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
 
         var fatalityScore : Double = -1.0
-//        for (csvRecord in csvParser) {
-//            val hoodName = csvRecord.get("NEIGHBOURHOOD_158");
-//            if (hoodName == hood) {
-//                fatalityScore = csvRecord.get("FATALITY_SCORE").toDouble()
-//                break
-//            }
-//        }
 
         var count: Int = 0
         run breaking@{
@@ -196,124 +208,4 @@ fun parseDateTime(datetime: String) : Boolean{
     todayDate.sec = time[2].toInt()
 
     return true
-}
-
-@Preview
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen("Your current location is safe :)",
-              "Avoid travelling to Sherbourne and Jarvis right now",
-            "26th July, 2023")
-}
-
-@Composable
-fun HomeScreen(safetyAnalysis: String,
-               safetyTip: String,
-               lastUpdated: String){
-    println("Building Homescreen!")
-    var lat by remember { mutableStateOf("Current latitude")}
-    var lon by remember { mutableStateOf("Current longitude")}
-
-    Column (Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceBetween) {
-        // An upper bar for app name and sponsor
-        Surface(shadowElevation = 1.dp) {
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Gray),
-                horizontalArrangement = Arrangement.End) {
-                // App Name
-                Text (
-                    text = "Toronto Armour",
-                    modifier = Modifier.padding(all = 8.dp),
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                // Make the App Name left aligned
-                Spacer(Modifier.weight(1f))
-
-                // Sponsor Button
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)) {
-                    Image (
-                        painterResource(id = R.drawable.heart_icon),
-                        contentDescription ="Sponsor heart icon",
-                        modifier = Modifier.size(30.dp),
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // A rounded text bar for current location with refresh icon
-        Surface (shape = MaterialTheme.shapes.medium,
-                 shadowElevation = 1.dp,
-                 border = BorderStroke(2.dp,Color.Blue)
-        ){
-            Row (modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End) {
-                var latitude by remember { mutableStateOf("Latitude") }
-                var longitude by remember { mutableStateOf("Longitude") }
-                Text (
-                    modifier = Modifier.padding(all = 8.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "$latitude, $longitude"
-                )
-
-                Spacer(Modifier.weight(1f))
-
-                Button (onClick= {latitude = GPSLocation.getLat().toBigDecimal().toPlainString();longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
-                    Image (
-                        painterResource(id = R.drawable.refresh),
-                        contentDescription ="Refresh icon",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(80.dp))
-
-        // Message indicating the safety of current location
-        Row (modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "$safetyAnalysis",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Spacer(modifier = Modifier.height(30.dp))
-
-        // Tips: Which location too avoid at given time
-        Row (modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "$safetyTip",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Disclaimer
-        Row (modifier = Modifier
-            .weight(1f, false)
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "The information above is based on the official data provided by Toronto Police Service Public Safety Data Portal as of $lastUpdated",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.labelSmall,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
 }
