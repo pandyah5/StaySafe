@@ -35,12 +35,17 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hp.staysafe.ui.theme.StaySafeTheme
 import androidx.compose.runtime.*
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import java.io.BufferedReader
 import java.text.SimpleDateFormat
 import java.util.Date
 
 
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    var fatalityScore: Double = -1.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,11 +53,24 @@ class MainActivity : ComponentActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val location_retrieved = fetchLocation()
 
+        // Get the current date and time of the user
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
         val currentDateTime = sdf.format(Date())
         var parseFailed = !parseDateTime(currentDateTime)
         if (parseFailed) {
             println(">>> ERROR: The date parsing failed!")
+        }
+
+        // Get neighbourhood from GPS coordinates (lat, lon)
+        var hood : String = "Agincourt North"
+
+        // Get fatality score from csv data
+        var fatalityScore = getFatalityScore(todayDate.month, hood)
+        if (fatalityScore == -1.0) {
+            println(">>> ERROR: Could not retrieve fatality score for $hood for ${todayDate.month}")
+        }
+        else {
+            println(">>> SUCCESS: The fatality score for $hood in ${todayDate.month} is $fatalityScore")
         }
 
         setContent {
@@ -68,6 +86,46 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun getFatalityScore(month:Int, hood:String) :Double{
+        var monthString = ""
+        when (month) {
+            1 -> monthString = "January"
+            2 -> monthString = "February"
+            3 -> monthString = "March"
+            4 -> monthString = "April"
+            5 -> monthString = "May"
+            6 -> monthString = "June"
+            7 -> monthString = "July"
+            8 -> monthString = "August"
+            9 -> monthString = "September"
+            10 -> monthString = "October"
+            11 -> monthString = "November"
+            12 -> monthString = "December"
+        }
+        val bufferReader = BufferedReader(assets.open("$monthString.csv").reader())
+        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
+
+        var fatalityScore : Double = -1.0
+//        for (csvRecord in csvParser) {
+//            val hoodName = csvRecord.get("NEIGHBOURHOOD_158");
+//            if (hoodName == hood) {
+//                fatalityScore = csvRecord.get("FATALITY_SCORE").toDouble()
+//                break
+//            }
+//        }
+
+        var found: Boolean  = false
+        csvParser.forEach {
+            it?.let {
+                if (it.get(0) == hood) {
+                    fatalityScore = it.get(1).toDouble()
+                }
+            }
+        }
+
+        return fatalityScore
     }
 
     private fun fetchLocation(): Boolean {
