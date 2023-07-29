@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,11 +42,20 @@ class HomeScreen : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             StaySafeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                // A box container to set the app background
+                Box (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.toronto_bg),
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = "Background Image",
+                        contentScale = ContentScale.Crop,
+                        alpha = 0.4F
+                    )
                     HomeScreen("Your current location is safe :)",
                         "Avoid travelling to Sherbourne and Jarvis right now",
                         "26th July, 2023")
@@ -68,7 +80,8 @@ fun HomeScreen(safetyAnalysis: String,
     println("Building Homescreen!")
 
     Column (Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween) {
+        verticalArrangement = Arrangement.SpaceBetween,
+        ) {
         // An upper bar for app name and sponsor
         Surface(shadowElevation = 1.dp) {
             Row (modifier = Modifier
