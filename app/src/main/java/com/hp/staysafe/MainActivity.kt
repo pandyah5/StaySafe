@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        
+
         println(">>> INFO: We parsed $count rows in the CSV file")
 
         return fatalityScore
