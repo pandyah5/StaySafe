@@ -116,14 +116,20 @@ class MainActivity : ComponentActivity() {
 //            }
 //        }
 
-        var found: Boolean  = false
-        csvParser.forEach {
-            it?.let {
-                if (it.get(0) == hood) {
-                    fatalityScore = it.get(1).toDouble()
+        var count: Int = 0
+        run breaking@{
+            csvParser.forEach {
+                count++
+                it?.let {
+                    if (it.get(0) == hood) {
+                        fatalityScore = it.get(1).toDouble()
+                        return@breaking
+                    }
                 }
             }
         }
+        
+        println(">>> INFO: We parsed $count rows in the CSV file")
 
         return fatalityScore
     }
