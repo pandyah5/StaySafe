@@ -45,7 +45,6 @@ import java.io.BufferedReader
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var fatalityScore: Double = -1.0
@@ -88,21 +87,21 @@ class MainActivity : ComponentActivity() {
                     startActivity(navigate)
                 }, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
                     Image(
-                        painterResource(id = R.drawable.armourlogotransparent),
+                        painterResource(id = R.drawable.armourlogoshieldtransparent),
                         contentDescription = "Armour logo",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(200.dp)
                     )
                 }
 
-                Text (text = "Toronto Armour", fontFamily = FontFamily.Serif, fontSize = 18.sp)
+                Text (text = "Toronto Armour", fontFamily = FontFamily.Serif, fontSize = 25.sp)
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text (text = "Pat Armour to continue")
 
-                Spacer(Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(150.dp))
 
-                Text (text = "Hint: Armour is our four-legged friend!", fontFamily= FontFamily.Serif, fontSize = 10.sp)
+                Text (text = "Hint: Armour is our four-legged friend!", fontFamily= FontFamily.Serif, fontSize = 12.sp)
             }
         }
     }
