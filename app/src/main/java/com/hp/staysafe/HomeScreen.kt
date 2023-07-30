@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -125,18 +127,39 @@ fun HomeScreen(safetyAnalysis: String,
         Spacer(modifier = Modifier.height(40.dp))
 
         // A rounded info message introducing 'Armour'
-        Surface (shape = MaterialTheme.shapes.extraLarge,
-            shadowElevation = 1.dp,
-            color = Color.LightGray.copy(alpha = transparency),
-            modifier = Modifier.padding(20.dp)
-        )
-        {
-            Text (
-                text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
-                style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 5.dp, end = 5.dp)
+        BoxWithConstraints {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                shadowElevation = 1.dp,
+                color = Color.LightGray.copy(alpha = transparency),
+                modifier = Modifier.padding(20.dp)
             )
+            {
+                Text(
+                    text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(
+                        top = 15.dp,
+                        bottom = 15.dp,
+                        start = 5.dp,
+                        end = 5.dp
+                    )
+                )
+            }
+            Column () {
+                Spacer(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(350.dp)
+                )
+                Image(
+                    painterResource(id = R.drawable.armourstanding),
+                    contentDescription = "Armour standing",
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
         }
 
         Spacer(modifier = Modifier.height(80.dp))
