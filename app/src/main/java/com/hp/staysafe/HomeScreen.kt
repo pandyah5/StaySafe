@@ -61,11 +61,10 @@ class HomeScreen : ComponentActivity() {
                         contentScale = ContentScale.Crop,
                         alpha = 0.4F
                     )
-                    HomeScreen("It looks like you are currently near Mount Dennis. The data suggets low threat levels at this time.\n" +
+                    HomeScreen("It looks like you are currently near Mount Dennis. The data suggests low threat levels at this time.\n" +
                             "\n" +
                             "However, never keep your guard down!",
-                        "Avoid travelling to Sherbourne and Jarvis right now",
-                        "26th July, 2023")
+                        "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!")
                 }
             }
         }
@@ -76,27 +75,27 @@ class HomeScreen : ComponentActivity() {
 @Composable
 fun PreviewHomeScreen() {
     HomeScreen("Your current location is safe :)",
-        "Avoid travelling to Sherbourne and Jarvis right now",
-        "26th July, 2023")
+        "Avoid travelling to Sherbourne and Jarvis right now")
 }
 
 @Composable
 fun HomeScreen(safetyAnalysis: String,
-               safetyTip: String,
-               lastUpdated: String){
-    println("Building Homescreen!")
+               safetyTip: String){
+    println(">>> INFO: Building Homescreen!")
+    val transparency = 0.5f
 
     Column (Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween,
         ) {
         // An upper bar for app name and sponsor
-        Surface(shadowElevation = 1.dp) {
+        Surface(shadowElevation = 1.dp,
+                color = Color.LightGray.copy(alpha = transparency)) {
             Row (modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray),
+                .background(Color.LightGray.copy(alpha = transparency)),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 // Settings Button
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image (
                         painterResource(id = R.drawable.setting_icon),
                         contentDescription ="Settings icon",
@@ -113,7 +112,7 @@ fun HomeScreen(safetyAnalysis: String,
                 )
 
                 // Sponsor Button
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image (
                         painterResource(id = R.drawable.gift_icon),
                         contentDescription ="Sponsor heart icon",
@@ -128,14 +127,13 @@ fun HomeScreen(safetyAnalysis: String,
         // A rounded info message introducing 'Armour'
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            color = Color.LightGray,
-            modifier = Modifier.padding(15.dp)
+            color = Color.LightGray.copy(alpha = transparency),
+            modifier = Modifier.padding(20.dp)
         )
         {
             Text (
                 text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
-                fontFamily = FontFamily.Serif,
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 5.dp, end = 5.dp)
             )
@@ -146,8 +144,8 @@ fun HomeScreen(safetyAnalysis: String,
         // Message indicating the safety of current location
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            color = Color.LightGray,
-            modifier = Modifier.padding(10.dp).align(CenterHorizontally)
+            color = Color.LightGray.copy(alpha = transparency),
+            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
         ) {
             Row (modifier = Modifier
                 .padding(20.dp)
@@ -156,18 +154,17 @@ fun HomeScreen(safetyAnalysis: String,
                 Text (
                     modifier = Modifier.padding(all = 8.dp),
                     text = "$safetyAnalysis",
-                    textAlign = TextAlign.Center,
-                    fontSize = 15.sp,
-                    fontFamily = FontFamily.Serif,
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center
                 )
             }
         }
 
-        // A rounded text bar for current location
+        // A refresh button
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            color = Color.LightGray.copy(alpha = 0.6f),
-            modifier = Modifier.padding(10.dp).align(CenterHorizontally)
+            color = Color.Transparent,
+            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
         ){
             Row (horizontalArrangement = Arrangement.Center) {
                 var latitude by remember { mutableStateOf("Latitude") }
@@ -176,41 +173,38 @@ fun HomeScreen(safetyAnalysis: String,
                 Button (onClick= {
                     latitude = GPSLocation.getLat().toBigDecimal().toPlainString();
                     longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = 0.6f))
+                    ) {
                     Text (
                         modifier = Modifier.padding(all = 5.dp),
+                        style = MaterialTheme.typography.titleSmall,
                         color = Color.Black,
-                        fontFamily = FontFamily.Serif,
-                        fontSize = 15.sp,
                         text = "Refresh location"
                     )
                 }
             }
         }
 
-        // Tips: Which location too avoid at given time
-        Row (modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "$safetyTip",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+        Spacer(modifier = Modifier.height(40.dp))
 
-        // Disclaimer
-        Row (modifier = Modifier
-            .weight(1f, false)
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "The information above is based on the official data provided by Toronto Police Service Public Safety Data Portal as of $lastUpdated",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.labelSmall,
-                textAlign = TextAlign.Center
-            )
+        // Tips: Safety tips for the user
+        Surface (shape = MaterialTheme.shapes.extraLarge,
+            shadowElevation = 1.dp,
+            color = Color.LightGray.copy(alpha = transparency),
+            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "$safetyTip",
+                    modifier = Modifier.padding(all = 5.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
