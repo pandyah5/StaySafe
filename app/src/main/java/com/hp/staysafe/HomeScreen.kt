@@ -162,7 +162,7 @@ fun HomeScreen(safetyAnalysis: String,
 
         }
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Message indicating the safety of current location
         Surface (shape = MaterialTheme.shapes.extraLarge,
