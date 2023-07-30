@@ -28,13 +28,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
 class HomeScreen : ComponentActivity() {
@@ -56,7 +61,9 @@ class HomeScreen : ComponentActivity() {
                         contentScale = ContentScale.Crop,
                         alpha = 0.4F
                     )
-                    HomeScreen("Your current location is safe :)",
+                    HomeScreen("It looks like you are currently near Mount Dennis. The data suggets low threat levels at this time.\n" +
+                            "\n" +
+                            "However, never keep your guard down!",
                         "Avoid travelling to Sherbourne and Jarvis right now",
                         "26th July, 2023")
                 }
@@ -86,24 +93,31 @@ fun HomeScreen(safetyAnalysis: String,
         Surface(shadowElevation = 1.dp) {
             Row (modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Gray),
-                horizontalArrangement = Arrangement.End) {
+                .background(Color.LightGray),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                // Settings Button
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
+                    Image (
+                        painterResource(id = R.drawable.setting_icon),
+                        contentDescription ="Settings icon",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
                 // App Name
                 Text (
                     text = "Toronto Armour",
-                    modifier = Modifier.padding(all = 8.dp),
-                    style = MaterialTheme.typography.titleLarge
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(all = 8.dp)
                 )
 
-                // Make the App Name left aligned
-                Spacer(Modifier.weight(1f))
-
                 // Sponsor Button
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)) {
+                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
                     Image (
-                        painterResource(id = R.drawable.heart_icon),
+                        painterResource(id = R.drawable.gift_icon),
                         contentDescription ="Sponsor heart icon",
-                        modifier = Modifier.size(30.dp),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -111,53 +125,68 @@ fun HomeScreen(safetyAnalysis: String,
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // A rounded text bar for current location with refresh icon
-        Surface (shape = MaterialTheme.shapes.medium,
+        // A rounded info message introducing 'Armour'
+        Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            border = BorderStroke(2.dp, Color.Blue)
-        ){
-            Row (modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End) {
-                var latitude by remember { mutableStateOf("Latitude") }
-                var longitude by remember { mutableStateOf("Longitude") }
-                Text (
-                    modifier = Modifier.padding(all = 8.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "$latitude, $longitude"
-                )
-
-                Spacer(Modifier.weight(1f))
-
-                Button (onClick= {
-                    latitude = GPSLocation.getLat().toBigDecimal().toPlainString();
-                    longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
-                    Image (
-                        painterResource(id = R.drawable.refresh),
-                        contentDescription ="Refresh icon",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
+            color = Color.LightGray,
+            modifier = Modifier.padding(15.dp)
+        )
+        {
+            Text (
+                text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
+                fontFamily = FontFamily.Serif,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 5.dp, end = 5.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(80.dp))
 
         // Message indicating the safety of current location
-        Row (modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth()) {
-            Text(
-                text = "$safetyAnalysis",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
+        Surface (shape = MaterialTheme.shapes.extraLarge,
+            shadowElevation = 1.dp,
+            color = Color.LightGray,
+            modifier = Modifier.padding(10.dp).align(CenterHorizontally)
+        ) {
+            Row (modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center) {
+                Text (
+                    modifier = Modifier.padding(all = 8.dp),
+                    text = "$safetyAnalysis",
+                    textAlign = TextAlign.Center,
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily.Serif,
+                )
+            }
         }
 
-        // Spacer(modifier = Modifier.height(30.dp))
+        // A rounded text bar for current location
+        Surface (shape = MaterialTheme.shapes.extraLarge,
+            shadowElevation = 1.dp,
+            color = Color.LightGray.copy(alpha = 0.6f),
+            modifier = Modifier.padding(10.dp).align(CenterHorizontally)
+        ){
+            Row (horizontalArrangement = Arrangement.Center) {
+                var latitude by remember { mutableStateOf("Latitude") }
+                var longitude by remember { mutableStateOf("Longitude") }
+
+                Button (onClick= {
+                    latitude = GPSLocation.getLat().toBigDecimal().toPlainString();
+                    longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
+                    Text (
+                        modifier = Modifier.padding(all = 5.dp),
+                        color = Color.Black,
+                        fontFamily = FontFamily.Serif,
+                        fontSize = 15.sp,
+                        text = "Refresh location"
+                    )
+                }
+            }
+        }
 
         // Tips: Which location too avoid at given time
         Row (modifier = Modifier
