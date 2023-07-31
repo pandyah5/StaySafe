@@ -34,6 +34,14 @@ for index, row in data.iterrows():
 
 data['FATALITY_SCORE'] = fatality_score
 
+# Create dataframe of Neighbourhood - Avg(X) - Avg(Y)
+neighbourhood_xy = data[["NEIGHBOURHOOD_158", "X", "Y"]]
+neighbourhood_xy.sort_values(by=['NEIGHBOURHOOD_158'])
+neighbourhood_xy = neighbourhood_xy.groupby(["NEIGHBOURHOOD_158"], as_index=False)[["X", "Y"]].mean()
+
+# Export file to csv
+csv_file = neighbourhood_xy.to_csv("neighbourhood_xy.csv", index = False)
+
 ## Group the data by NEIGHBOURHOOD_158, OCC_MONTH, OCC_DAY and OCC_TIME_RANGE
 data = data[["NEIGHBOURHOOD_158", "OCC_MONTH", "FATALITY_SCORE"]]
 data = data.groupby(["NEIGHBOURHOOD_158", "OCC_MONTH"], as_index=False)["FATALITY_SCORE"].sum()
