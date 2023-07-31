@@ -47,6 +47,7 @@ import java.util.Date
 
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    val entrees: MutableList<neighbourhoodXY> = mutableListOf()
     var fatalityScore: Double = -1.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +55,10 @@ class MainActivity : ComponentActivity() {
 
         // Get live location of the user
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        val location_retrieved = fetchLocation()
+        val locationRetrieved = fetchLocation()
+        if (locationRetrieved) {
+            println(">>> ERROR: Failed to retrieve current location")
+        }
 
         // Get the current date and time of the user
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
@@ -63,6 +67,9 @@ class MainActivity : ComponentActivity() {
         if (parseFailed) {
             println(">>> ERROR: The date parsing failed!")
         }
+
+        // Load the neighbourhood x, y coordinates
+        getNeighbourhoodXY()
 
         // Get neighbourhood from GPS coordinates (lat, lon)
         var hood : String = "Agincourt North"
@@ -141,8 +148,23 @@ class MainActivity : ComponentActivity() {
         }
 
         println(">>> INFO: We parsed $count rows in the CSV file")
-
         return fatalityScore
+    }
+
+    private fun getNeighbourhoodXY() {
+        val bufferReader = BufferedReader(assets.open("neighbourhood_xy.csv").reader())
+        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
+
+        var count: Int = 0
+        csvParser.forEach {
+            count++
+            it?.let {
+                val neighbourhoodEntry = neighbourhoodXY(it.get(0).toString(), it.get(1).toDouble(), it.get(2).toDouble())
+                entrees.add(neighbourhoodEntry)
+            }
+        }
+
+        println(">>> SUCCESS: Added $count neighbourhood entries in entrees")
     }
 
     private fun fetchLocation(): Boolean {
@@ -164,6 +186,12 @@ class MainActivity : ComponentActivity() {
         }
         return true
     }
+}
+
+data class neighbourhoodXY (val name: String, val x: Double, val y: Double){
+    var neighbourhood158Name: String = this.name
+    var Lat: Double = this.x
+    var Lon: Double = this.y
 }
 
 // Static object to store the users live GPS coordinates
