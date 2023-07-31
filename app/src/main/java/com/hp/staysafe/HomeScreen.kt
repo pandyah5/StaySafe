@@ -43,10 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hp.staysafe.ui.theme.StaySafeTheme
+import kotlin.math.*
 
 class HomeScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             StaySafeTheme {
                 // A box container to set the app background
@@ -63,17 +65,13 @@ class HomeScreen : ComponentActivity() {
                         contentScale = ContentScale.Crop,
                         alpha = 0.4F
                     )
-                    HomeScreen("It looks like you are currently near Mount Dennis. The data suggests low threat levels at this time.\n" +
+                    HomeScreen("It looks like you are currently near ${Global.currentNeighbourhood}. The data suggests low threat levels at this time.\n" +
                             "\n" +
                             "However, never keep your guard down!",
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!")
                 }
             }
         }
-    }
-
-    private fun getNeighbourhood158(lat: Double, lon: Double) {
-        
     }
 }
 

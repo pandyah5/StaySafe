@@ -44,10 +44,64 @@ import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+public class Global {
+    companion object {
+        @JvmField
+        var entrees: MutableList<neighbourhoodXY> = mutableListOf()
+        var currentNeighbourhood: String = "defaultNeighbourhood"
+
+        private fun deg2rad(deg: Double) : Double{
+            return deg * (PI /180)
+        }
+
+        fun getDistanceFromLatLonInKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double {
+            val r = 6371; // Radius of the earth in km
+            val dLat = deg2rad(lat2-lat1);  // deg2rad below
+            val dLon = deg2rad(lon2-lon1);
+            val a =
+                sin(dLat/2) * sin(dLat/2) +
+                        cos(deg2rad(lat1)) * cos(deg2rad(lat2)) *
+                        sin(dLon/2) * sin(dLon/2)
+            ;
+            val c = 2 * atan2(sqrt(a), sqrt(1-a));
+            val d = r * c; // Distance in km
+            return d;
+        }
+
+        fun setNeighbourhoodFromLatLon(lat: Double, lon: Double) {
+            println(">>> INFO: Searching neighbourhood near Lat: $lat, Lon: $lon")
+            var neighbourhood: String = "Agincourt North"
+            var minimumDistance: Double = 10000.0
+
+            val iterator = Global.entrees.listIterator()
+            for (item in iterator) {
+                val neighbourhoodName = item.neighbourhood158Name
+                val neighbourhoodLat = item.Lat
+                val neighbourhoodLon = item.Lon
+
+                var distanceFromUser = getDistanceFromLatLonInKm(43.764081, -79.488275, neighbourhoodLat, neighbourhoodLon)
+                println("$neighbourhoodName: $distanceFromUser")
+
+                if (distanceFromUser < minimumDistance) {
+                    minimumDistance = distanceFromUser
+                    neighbourhood = neighbourhoodName
+                }
+            }
+
+            println(">>> INFO: User is in $neighbourhood")
+            currentNeighbourhood = neighbourhood
+        }
+    }
+}
 
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    val entrees: MutableList<neighbourhoodXY> = mutableListOf()
     var fatalityScore: Double = -1.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +110,7 @@ class MainActivity : ComponentActivity() {
         // Get live location of the user
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val locationRetrieved = fetchLocation()
-        if (locationRetrieved) {
+        if (!locationRetrieved) {
             println(">>> ERROR: Failed to retrieve current location")
         }
 
@@ -68,20 +122,8 @@ class MainActivity : ComponentActivity() {
             println(">>> ERROR: The date parsing failed!")
         }
 
-        // Load the neighbourhood x, y coordinates
-        getNeighbourhoodXY()
-
-        // Get neighbourhood from GPS coordinates (lat, lon)
-        var hood : String = "Agincourt North"
-
-        // Get fatality score from csv data
-        var fatalityScore = getFatalityScore(todayDate.month, hood)
-        if (fatalityScore == -1.0) {
-            println(">>> ERROR: Could not retrieve fatality score for $hood for ${todayDate.month}")
-        }
-        else {
-            println(">>> SUCCESS: The fatality score for $hood in ${todayDate.month} is $fatalityScore")
-        }
+        // Load the neighbourhood x, y coordinate data
+        readNeighbourhoodXY()
 
         setContent {
             Column (
@@ -90,6 +132,18 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button (onClick = {
+                    // Get neighbourhood from GPS coordinates (lat, lon)
+                    Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
+
+                    // Get fatality score from csv data
+                    var fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
+                    if (fatalityScore == -1.0) {
+                        println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
+                    }
+                    else {
+                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is $fatalityScore")
+                    }
+
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)
                     startActivity(navigate)
                 }, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
@@ -151,7 +205,7 @@ class MainActivity : ComponentActivity() {
         return fatalityScore
     }
 
-    private fun getNeighbourhoodXY() {
+    private fun readNeighbourhoodXY() {
         val bufferReader = BufferedReader(assets.open("neighbourhood_xy.csv").reader())
         val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
 
@@ -159,8 +213,8 @@ class MainActivity : ComponentActivity() {
         csvParser.forEach {
             count++
             it?.let {
-                val neighbourhoodEntry = neighbourhoodXY(it.get(0).toString(), it.get(1).toDouble(), it.get(2).toDouble())
-                entrees.add(neighbourhoodEntry)
+                val neighbourhoodEntry = neighbourhoodXY(it.get(0).toString(), it.get(2).toDouble(), it.get(1).toDouble())
+                Global.entrees.add(neighbourhoodEntry)
             }
         }
 
@@ -182,6 +236,7 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
                 GPSLocation.setLat(it.latitude)
                 GPSLocation.setLon(it.longitude)
+                println(">>> SUCCESS: Recorded the current location")
             }
         }
         return true
