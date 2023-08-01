@@ -55,6 +55,7 @@ public class Global {
         @JvmField
         var entrees: MutableList<neighbourhoodXY> = mutableListOf()
         var currentNeighbourhood: String = "defaultNeighbourhood"
+        var fatalityScore: Double = -1.0
 
         private fun deg2rad(deg: Double) : Double{
             return deg * (PI /180)
@@ -85,7 +86,7 @@ public class Global {
                 val neighbourhoodLat = item.Lat
                 val neighbourhoodLon = item.Lon
 
-                var distanceFromUser = getDistanceFromLatLonInKm(43.764081, -79.488275, neighbourhoodLat, neighbourhoodLon)
+                var distanceFromUser = getDistanceFromLatLonInKm(43.745324, -79.514379, neighbourhoodLat, neighbourhoodLon)
                 println("$neighbourhoodName: $distanceFromUser")
 
                 if (distanceFromUser < minimumDistance) {
@@ -102,7 +103,6 @@ public class Global {
 
 class MainActivity : ComponentActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    var fatalityScore: Double = -1.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,12 +136,12 @@ class MainActivity : ComponentActivity() {
                     Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
 
                     // Get fatality score from csv data
-                    var fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
-                    if (fatalityScore == -1.0) {
+                    Global.fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
+                    if (Global.fatalityScore == -1.0) {
                         println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
                     }
                     else {
-                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is $fatalityScore")
+                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
                     }
 
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)

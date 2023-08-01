@@ -85,6 +85,28 @@ fun PreviewHomeScreen() {
 @Composable
 fun HomeScreen(safetyAnalysis: String,
                safetyTip: String){
+    println(">>> INFO: Drafting the safety risk message")
+    var safetyMessage = ""
+    if (Global.fatalityScore <= 0.2) {
+        safetyMessage = "The data suggests very low safety risk, however, never let your guard down."
+    }
+    else if (0.2 < Global.fatalityScore && Global.fatalityScore <= 0.4) {
+        safetyMessage = "The data suggests low safety risk, however, never let your guard down."
+    }
+    else if (0.4 < Global.fatalityScore && Global.fatalityScore <= 0.6) {
+        safetyMessage = "The data suggests moderate safety risk, please be vigilant at all times."
+    }
+    else if (0.6 < Global.fatalityScore && Global.fatalityScore <= 0.8) {
+        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
+    }
+    else if (0.8 < Global.fatalityScore && Global.fatalityScore <= 1) {
+        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
+    }
+    else {
+        safetyMessage = "Error in analyzing safety risk."
+        println(">>> ERROR: Fatality score is not in the expected range. Please debug the error")
+    }
+
     println(">>> INFO: Building Homescreen!")
     val transparency = 0.5f
 
@@ -178,7 +200,7 @@ fun HomeScreen(safetyAnalysis: String,
                 horizontalArrangement = Arrangement.Center) {
                 Text (
                     modifier = Modifier.padding(all = 8.dp),
-                    text = "$safetyAnalysis",
+                    text = "It looks like you are currently in ${Global.currentNeighbourhood}. $safetyMessage",
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center
                 )
