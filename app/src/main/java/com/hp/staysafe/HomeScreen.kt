@@ -110,6 +110,7 @@ class HomeScreen : ComponentActivity() {
                 // Get fatality score from csv data
                 Global.fatalityScore = Global.neighbourhoodFatalityList[Global.currentNeighbourhood]?: Global.fatalityScore
                 println(">>> SUCCESS: Updated the fatality rate")
+
                 if (Global.fatalityScore == -1.0) {
                     println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
                 }
@@ -128,8 +129,6 @@ class HomeScreen : ComponentActivity() {
 
 @Composable
 fun HomeScreen(updateLocation: () -> Boolean, safetyTip: String){
-    val refreshed = remember { mutableStateOf("false") }
-
     println(">>> INFO: Drafting the safety risk message")
     var safetyMessage = ""
     if (Global.fatalityScore <= 0.2) {
