@@ -1,6 +1,8 @@
 package com.hp.staysafe
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -26,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,12 +45,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.hp.staysafe.ui.theme.StaySafeTheme
 import kotlin.math.*
 
 class HomeScreen : ComponentActivity() {
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize location client
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContent {
             StaySafeTheme {
@@ -65,26 +76,60 @@ class HomeScreen : ComponentActivity() {
                         contentScale = ContentScale.Crop,
                         alpha = 0.4F
                     )
-                    HomeScreen("It looks like you are currently near ${Global.currentNeighbourhood}. The data suggests low threat levels at this time.\n" +
-                            "\n" +
-                            "However, never keep your guard down!",
-                        "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!")
+
+                    HomeScreen(
+                        updateLocation = ::updateLocation,
+                        "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
+                    )
                 }
             }
         }
     }
+    private fun updateLocation(): Boolean {
+        val task = fusedLocationProviderClient.lastLocation
+
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
+        }
+
+        var success = true
+        task.addOnSuccessListener {
+            if (it != null){
+                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
+                // GPSLocation.setLat(it.latitude)
+                // GPSLocation.setLon(it.longitude)
+                GPSLocation.setLat(43.770266) // Black creek
+                GPSLocation.setLon(-79.519288) // Black creek
+                println(">>> SUCCESS: Updated the current location")
+
+                Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
+                println(">>> SUCCESS: Updated the current neighbourhood")
+
+                // Get fatality score from csv data
+                Global.fatalityScore = Global.neighbourhoodFatalityList[Global.currentNeighbourhood]?: Global.fatalityScore
+                println(">>> SUCCESS: Updated the fatality rate")
+                if (Global.fatalityScore == -1.0) {
+                    println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
+                }
+                else {
+                    println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
+                }
+            }
+            else {
+                success = false
+                println(">>> ERROR: Failed to fetch location!")
+            }
+        }
+        return success
+    }
 }
 
-@Preview
 @Composable
-fun PreviewHomeScreen() {
-    HomeScreen("Your current location is safe :)",
-        "Avoid travelling to Sherbourne and Jarvis right now")
-}
+fun HomeScreen(updateLocation: () -> Boolean, safetyTip: String){
+    val refreshed = remember { mutableStateOf("false") }
 
-@Composable
-fun HomeScreen(safetyAnalysis: String,
-               safetyTip: String){
     println(">>> INFO: Drafting the safety risk message")
     var safetyMessage = ""
     if (Global.fatalityScore <= 0.2) {
@@ -120,6 +165,7 @@ fun HomeScreen(safetyAnalysis: String,
                 .fillMaxWidth()
                 .background(Color.LightGray.copy(alpha = transparency)),
                 horizontalArrangement = Arrangement.SpaceBetween) {
+
                 // Settings Button
                 Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image (
@@ -213,20 +259,24 @@ fun HomeScreen(safetyAnalysis: String,
             color = Color.Transparent,
             modifier = Modifier.padding(20.dp).align(CenterHorizontally)
         ){
-            Row (horizontalArrangement = Arrangement.Center) {
-                var latitude by remember { mutableStateOf("Latitude") }
-                var longitude by remember { mutableStateOf("Longitude") }
+            // Get an instance of the location viewModel to share the lat and lon coordinates
+            val viewModel = viewModel<LocationViewModel>()
 
+            Row (horizontalArrangement = Arrangement.Center) {
                 Button (onClick= {
-                    latitude = GPSLocation.getLat().toBigDecimal().toPlainString();
-                    longitude = GPSLocation.getLon().toBigDecimal().toPlainString()},
+                        viewModel.updateUserLocation()
+                        val success: Boolean = updateLocation()
+                        if (!success) {
+                            println(">>> ERROR: Failed to fetch location in homescreen")
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = 0.6f))
                     ) {
                     Text (
                         modifier = Modifier.padding(all = 5.dp),
                         style = MaterialTheme.typography.titleSmall,
                         color = Color.Black,
-                        text = "Refresh location"
+                        text = "Refresh location ${viewModel.userLocationLat}, ${viewModel.userLocationLon}"
                     )
                 }
             }

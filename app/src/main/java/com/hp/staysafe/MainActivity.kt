@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,6 +40,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
@@ -53,6 +55,7 @@ import kotlin.math.sqrt
 public class Global {
     companion object {
         @JvmField
+        var neighbourhoodFatalityList = hashMapOf<String, Double>()
         var entrees: MutableList<neighbourhoodXY> = mutableListOf()
         var currentNeighbourhood: String = "defaultNeighbourhood"
         var fatalityScore: Double = -1.0
@@ -86,8 +89,8 @@ public class Global {
                 val neighbourhoodLat = item.Lat
                 val neighbourhoodLon = item.Lon
 
-                var distanceFromUser = getDistanceFromLatLonInKm(43.745324, -79.514379, neighbourhoodLat, neighbourhoodLon)
-                println("$neighbourhoodName: $distanceFromUser")
+                var distanceFromUser = getDistanceFromLatLonInKm(lat, lon, neighbourhoodLat, neighbourhoodLon)
+                // println("$neighbourhoodName: $distanceFromUser")
 
                 if (distanceFromUser < minimumDistance) {
                     minimumDistance = distanceFromUser
@@ -102,6 +105,7 @@ public class Global {
 }
 
 class MainActivity : ComponentActivity() {
+    // Declare the location provider client
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +115,7 @@ class MainActivity : ComponentActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val locationRetrieved = fetchLocation()
         if (!locationRetrieved) {
-            println(">>> ERROR: Failed to retrieve current location")
+            println(">>> ERROR: Failed to retrieve current location in main activity")
         }
 
         // Get the current date and time of the user
@@ -189,19 +193,17 @@ class MainActivity : ComponentActivity() {
         var fatalityScore : Double = -1.0
 
         var count: Int = 0
-        run breaking@{
-            csvParser.forEach {
-                count++
-                it?.let {
-                    if (it.get(0) == hood) {
-                        fatalityScore = it.get(1).toDouble()
-                        return@breaking
-                    }
+        csvParser.forEach {
+            count++
+            it?.let {
+                if (it.get(0) == hood) {
+                    fatalityScore = it.get(1).toDouble()
                 }
+                Global.neighbourhoodFatalityList.put(it.get(0), it.get(1).toDouble())
             }
         }
 
-        println(">>> INFO: We parsed $count rows in the CSV file")
+        println(">>> INFO: We parsed $count rows in the $monthString.csv file")
         return fatalityScore
     }
 
@@ -241,6 +243,11 @@ class MainActivity : ComponentActivity() {
         }
         return true
     }
+}
+
+data class neighbourhoodFatality(val name: String, val score: Double) {
+    var neighbourhood158Name = this.name
+    var fatalityScore = this.score
 }
 
 data class neighbourhoodXY (val name: String, val x: Double, val y: Double){

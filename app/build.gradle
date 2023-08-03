@@ -71,4 +71,7 @@ dependencies {
 
     // For reading CSV file reader
     implementation 'org.apache.commons:commons-csv:1.5'
+
+    // For using viewModels in composable functions
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
 }
