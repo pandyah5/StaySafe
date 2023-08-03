@@ -1,6 +1,7 @@
 package com.hp.staysafe
 
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -29,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,6 +48,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -53,15 +57,15 @@ import com.hp.staysafe.ui.theme.StaySafeTheme
 import kotlin.math.*
 
 class HomeScreen : ComponentActivity() {
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize location client
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
         setContent {
             StaySafeTheme {
+                // Get an instance of the location viewModel to share the lat and lon coordinates
+                var locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
+                val location by locationViewModel.getLocationLiveData().observeAsState()
+
                 // A box container to set the app background
                 Box (
                     modifier = Modifier
@@ -78,57 +82,17 @@ class HomeScreen : ComponentActivity() {
                     )
 
                     HomeScreen(
-                        updateLocation = ::updateLocation,
+                        location,
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
                     )
                 }
             }
         }
     }
-    private fun updateLocation(): Boolean {
-        val task = fusedLocationProviderClient.lastLocation
-
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-        }
-
-        var success = true
-        task.addOnSuccessListener {
-            if (it != null){
-                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                // GPSLocation.setLat(it.latitude)
-                // GPSLocation.setLon(it.longitude)
-                GPSLocation.setLat(43.770266) // Black creek
-                GPSLocation.setLon(-79.519288) // Black creek
-                println(">>> SUCCESS: Updated the current location")
-
-                Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
-                println(">>> SUCCESS: Updated the current neighbourhood")
-
-                // Get fatality score from csv data
-                Global.fatalityScore = Global.neighbourhoodFatalityList[Global.currentNeighbourhood]?: Global.fatalityScore
-                println(">>> SUCCESS: Updated the fatality rate")
-
-                if (Global.fatalityScore == -1.0) {
-                    println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
-                }
-                else {
-                    println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
-                }
-            }
-            else {
-                success = false
-                println(">>> ERROR: Failed to fetch location!")
-            }
-        }
-        return success
-    }
 }
 
 @Composable
-fun HomeScreen(updateLocation: () -> Boolean, safetyTip: String){
+fun HomeScreen(location : LiveLocation?, safetyTip : String){
     println(">>> INFO: Drafting the safety risk message")
     var safetyMessage = ""
     if (Global.fatalityScore <= 0.2) {
@@ -255,27 +219,16 @@ fun HomeScreen(updateLocation: () -> Boolean, safetyTip: String){
         // A refresh button
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            color = Color.Transparent,
+            color = Color.White,
             modifier = Modifier.padding(20.dp).align(CenterHorizontally)
         ){
-            // Get an instance of the location viewModel to share the lat and lon coordinates
-            val viewModel = viewModel<LocationViewModel>()
-
             Row (horizontalArrangement = Arrangement.Center) {
-                Button (onClick= {
-                        viewModel.updateUserLocation()
-                        val success: Boolean = updateLocation()
-                        if (!success) {
-                            println(">>> ERROR: Failed to fetch location in homescreen")
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = 0.6f))
-                    ) {
+                if (location != null) {
                     Text (
                         modifier = Modifier.padding(all = 5.dp),
                         style = MaterialTheme.typography.titleSmall,
                         color = Color.Black,
-                        text = "Refresh location ${viewModel.userLocationLat}, ${viewModel.userLocationLon}"
+                        text = "Live location ${location.latitude}, ${location.longitude}"
                     )
                 }
             }

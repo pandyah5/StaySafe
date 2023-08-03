@@ -74,4 +74,5 @@ dependencies {
 
     // For using viewModels in composable functions
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
+    implementation "androidx.compose.runtime:runtime-livedata:1.0.0-beta01"
 }

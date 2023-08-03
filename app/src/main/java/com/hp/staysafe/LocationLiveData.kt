@@ -39,7 +39,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
         startLocationUpdates()
     }
 
-    private fun startLocationUpdates() {
+    internal fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -77,9 +77,9 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
 
     // This is a way to declare static objects in Kotlin
     companion object {
-        val ONE_MINUTE : Long = 60000
+        val ONE_MINUTE : Long = 5000
         val locationRequest : LocationRequest = LocationRequest.create().apply {
-            interval = ONE_MINUTE * 5
+            interval = ONE_MINUTE   
             fastestInterval = ONE_MINUTE/4
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
