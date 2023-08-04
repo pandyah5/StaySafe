@@ -1,12 +1,8 @@
 package com.hp.staysafe
 
-import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,32 +25,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.hp.staysafe.ui.theme.StaySafeTheme
-import kotlin.math.*
 
 class HomeScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +46,7 @@ class HomeScreen : ComponentActivity() {
         setContent {
             StaySafeTheme {
                 // Get an instance of the location viewModel to share the lat and lon coordinates
-                var locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
+                val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
                 val location by locationViewModel.getLocationLiveData().observeAsState()
 
                 // A box container to set the app background
@@ -94,26 +77,26 @@ class HomeScreen : ComponentActivity() {
 @Composable
 fun HomeScreen(location : LiveLocation?, safetyTip : String){
     println(">>> INFO: Drafting the safety risk message")
-    var safetyMessage = ""
-    if (Global.fatalityScore <= 0.2) {
-        safetyMessage = "The data suggests very low safety risk, however, never let your guard down."
-    }
-    else if (0.2 < Global.fatalityScore && Global.fatalityScore <= 0.4) {
-        safetyMessage = "The data suggests low safety risk, however, never let your guard down."
-    }
-    else if (0.4 < Global.fatalityScore && Global.fatalityScore <= 0.6) {
-        safetyMessage = "The data suggests moderate safety risk, please be vigilant at all times."
-    }
-    else if (0.6 < Global.fatalityScore && Global.fatalityScore <= 0.8) {
-        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
-    }
-    else if (0.8 < Global.fatalityScore && Global.fatalityScore <= 1) {
-        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
-    }
-    else {
-        safetyMessage = "Error in analyzing safety risk."
-        println(">>> ERROR: Fatality score is not in the expected range. Please debug the error")
-    }
+    var safetyMessage = "TODO"
+//    if (Global.fatalityScore <= 0.2) {
+//        safetyMessage = "The data suggests very low safety risk, however, never let your guard down."
+//    }
+//    else if (0.2 < Global.fatalityScore && Global.fatalityScore <= 0.4) {
+//        safetyMessage = "The data suggests low safety risk, however, never let your guard down."
+//    }
+//    else if (0.4 < Global.fatalityScore && Global.fatalityScore <= 0.6) {
+//        safetyMessage = "The data suggests moderate safety risk, please be vigilant at all times."
+//    }
+//    else if (0.6 < Global.fatalityScore && Global.fatalityScore <= 0.8) {
+//        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
+//    }
+//    else if (0.8 < Global.fatalityScore && Global.fatalityScore <= 1) {
+//        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
+//    }
+//    else {
+//        safetyMessage = "Error in analyzing safety risk."
+//        println(">>> ERROR: Fatality score is not in the expected range. Please debug the error")
+//    }
 
     println(">>> INFO: Building Homescreen!")
     val transparency = 0.5f
@@ -210,7 +193,7 @@ fun HomeScreen(location : LiveLocation?, safetyTip : String){
                 if (location != null) {
                     Text (
                         modifier = Modifier.padding(all = 8.dp),
-                        text = "It looks like you are currently in ${location.neighbourHood}. $safetyMessage",
+                        text = "It looks like you are currently in ${location.neighbourHood} and the fatality score is ${location.fatalityScore}",
                         style = MaterialTheme.typography.titleSmall,
                         textAlign = TextAlign.Center
                     )

@@ -54,8 +54,11 @@ class MainActivity : ComponentActivity() {
             println(">>> ERROR: The date parsing failed!")
         }
 
-        // Load the neighbourhood x, y coordinate data
-        readNeighbourhoodXY()
+        // Load and initialize the neighbourhood x, y coordinate data
+        initializeNeighbourhoodLatLonData()
+
+        // Load and initialize neighbourhood fatality score data
+        initializeFatalityScoreData(todayDate.month)
 
         setContent {
             Column (
@@ -65,16 +68,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Button (onClick = {
                     // Get neighbourhood from GPS coordinates (lat, lon)
-                    Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
-
-                    // Get fatality score from csv data
-//                    Global.fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
-//                    if (Global.fatalityScore == -1.0) {
-//                        println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
-//                    }
-//                    else {
-//                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
-//                    }
+                    GlobalNeighbourhoodLatLonData.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
 
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)
                     startActivity(navigate)
@@ -99,58 +93,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getFatalityScore(month:Int, hood:String) :Double{
-        var monthString = ""
-        when (month) {
-            1 -> monthString = "January"
-            2 -> monthString = "February"
-            3 -> monthString = "March"
-            4 -> monthString = "April"
-            5 -> monthString = "May"
-            6 -> monthString = "June"
-            7 -> monthString = "July"
-            8 -> monthString = "August"
-            9 -> monthString = "September"
-            10 -> monthString = "October"
-            11 -> monthString = "November"
-            12 -> monthString = "December"
-        }
-        val bufferReader = BufferedReader(assets.open("$monthString.csv").reader())
-        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
-
-        var fatalityScore : Double = -1.0
-
-        var count: Int = 0
-        csvParser.forEach {
-            count++
-            it?.let {
-                if (it.get(0) == hood) {
-                    fatalityScore = it.get(1).toDouble()
-                }
-                Global.neighbourhoodFatalityList.put(it.get(0), it.get(1).toDouble())
-            }
-        }
-
-        println(">>> INFO: We parsed $count rows in the $monthString.csv file")
-        return fatalityScore
-    }
-
-    private fun readNeighbourhoodXY() {
-        val bufferReader = BufferedReader(assets.open("neighbourhood_xy.csv").reader())
-        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
-
-        var count: Int = 0
-        csvParser.forEach {
-            count++
-            it?.let {
-                val neighbourhoodEntry = neighbourhoodXY(it.get(0).toString(), it.get(2).toDouble(), it.get(1).toDouble())
-                Global.entrees.add(neighbourhoodEntry)
-            }
-        }
-
-        println(">>> SUCCESS: Added $count neighbourhood entries in entrees")
-    }
-
     private fun fetchLocation(): Boolean {
         val task = fusedLocationProviderClient.lastLocation
 
@@ -171,17 +113,52 @@ class MainActivity : ComponentActivity() {
         }
         return true
     }
-}
 
-data class neighbourhoodFatality(val name: String, val score: Double) {
-    var neighbourhood158Name = this.name
-    var fatalityScore = this.score
-}
+    private fun initializeNeighbourhoodLatLonData() {
+        val bufferReader = BufferedReader(assets.open("neighbourhood_xy.csv").reader())
+        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
 
-data class neighbourhoodXY (val name: String, val x: Double, val y: Double){
-    var neighbourhood158Name: String = this.name
-    var Lat: Double = this.x
-    var Lon: Double = this.y
+        var count: Int = 0
+        csvParser.forEach {
+            count++
+            it?.let {
+                val neighbourhoodEntry = neighbourhoodXY(it.get(0).toString(), it.get(2).toDouble(), it.get(1).toDouble())
+                GlobalNeighbourhoodLatLonData.addNeighbourhood(neighbourhoodEntry)
+            }
+        }
+
+        println(">>> SUCCESS: Added $count neighbourhood entries in entrees")
+    }
+    private fun initializeFatalityScoreData(month:Int) {
+        var monthString = ""
+        when (month) {
+            1 -> monthString = "January"
+            2 -> monthString = "February"
+            3 -> monthString = "March"
+            4 -> monthString = "April"
+            5 -> monthString = "May"
+            6 -> monthString = "June"
+            7 -> monthString = "July"
+            8 -> monthString = "August"
+            9 -> monthString = "September"
+            10 -> monthString = "October"
+            11 -> monthString = "November"
+            12 -> monthString = "December"
+        }
+        val bufferReader = BufferedReader(assets.open("$monthString.csv").reader())
+        val csvParser = CSVParser.parse(bufferReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase())
+
+        var count: Int = 0
+        csvParser.forEach {
+            count++
+            it?.let {
+                GlobalNeighbourhoodFatalityData.addNeighbourhoodFatality(it.get(0), it.get(1).toDouble())
+            }
+        }
+
+        println(">>> INFO: We parsed $count rows in the $monthString.csv file")
+        return
+    }
 }
 
 // Static object to store the users live GPS coordinates

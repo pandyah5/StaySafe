@@ -6,13 +6,15 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-public class Global {
+public class GlobalNeighbourhoodLatLonData () {
     companion object {
-        @JvmField
-        var neighbourhoodFatalityList = hashMapOf<String, Double>()
-        var entrees: MutableList<neighbourhoodXY> = mutableListOf()
-        var fatalityScore: Double = -1.0
+        private var neighbourhoodList: MutableList<neighbourhoodXY> = mutableListOf()
 
+        fun addNeighbourhood(entry: neighbourhoodXY) {
+            neighbourhoodList.add(entry)
+        }
+
+        // Helper functions for finding current neighbourhood
         private fun deg2rad(deg: Double) : Double{
             return deg * (PI /180)
         }
@@ -36,7 +38,7 @@ public class Global {
             var neighbourhood: String = "Agincourt North"
             var minimumDistance: Double = 10000.0
 
-            val iterator = Global.entrees.listIterator()
+            val iterator = neighbourhoodList.listIterator()
             for (item in iterator) {
                 val neighbourhoodName = item.neighbourhood158Name
                 val neighbourhoodLat = item.Lat
@@ -55,4 +57,10 @@ public class Global {
             return neighbourhood
         }
     }
+}
+
+data class neighbourhoodXY (val name: String, val x: Double, val y: Double){
+    var neighbourhood158Name: String = this.name
+    var Lat: Double = this.x
+    var Lon: Double = this.y
 }

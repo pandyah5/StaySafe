@@ -11,18 +11,11 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import java.io.BufferedReader
 
 class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
-    private var liveNeighbourhood : String = "Territory A"
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     override fun onActive() {
-        // Load the neighbourhood data
-        // TODO: Need to implement a repository class to read CSV
-
         // Get the live location
         super.onActive()
         if (ActivityCompat.checkSelfPermission(
@@ -91,18 +84,5 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
             fastestInterval = ONE_MINUTE/4
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-    }
-
-    private fun setNeighbourhood () {
-        if (liveNeighbourhood == "Territory A") {
-            liveNeighbourhood = "Territory B"
-        }
-        else {
-            liveNeighbourhood = "Territory A"
-        }
-    }
-
-    fun getNeighbourhood () : String{
-        return liveNeighbourhood
     }
 }
