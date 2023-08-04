@@ -6,103 +6,31 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.hp.staysafe.ui.theme.StaySafeTheme
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
-
-public class Global {
-    companion object {
-        @JvmField
-        var neighbourhoodFatalityList = hashMapOf<String, Double>()
-        var entrees: MutableList<neighbourhoodXY> = mutableListOf()
-        var currentNeighbourhood: String = "defaultNeighbourhood"
-        var fatalityScore: Double = -1.0
-
-        private fun deg2rad(deg: Double) : Double{
-            return deg * (PI /180)
-        }
-
-        fun getDistanceFromLatLonInKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double {
-            val r = 6371; // Radius of the earth in km
-            val dLat = deg2rad(lat2-lat1);  // deg2rad below
-            val dLon = deg2rad(lon2-lon1);
-            val a =
-                sin(dLat/2) * sin(dLat/2) +
-                        cos(deg2rad(lat1)) * cos(deg2rad(lat2)) *
-                        sin(dLon/2) * sin(dLon/2)
-            ;
-            val c = 2 * atan2(sqrt(a), sqrt(1-a));
-            val d = r * c; // Distance in km
-            return d;
-        }
-
-        fun setNeighbourhoodFromLatLon(lat: Double, lon: Double) {
-            println(">>> INFO: Searching neighbourhood near Lat: $lat, Lon: $lon")
-            var neighbourhood: String = "Agincourt North"
-            var minimumDistance: Double = 10000.0
-
-            val iterator = Global.entrees.listIterator()
-            for (item in iterator) {
-                val neighbourhoodName = item.neighbourhood158Name
-                val neighbourhoodLat = item.Lat
-                val neighbourhoodLon = item.Lon
-
-                var distanceFromUser = getDistanceFromLatLonInKm(lat, lon, neighbourhoodLat, neighbourhoodLon)
-                // println("$neighbourhoodName: $distanceFromUser")
-
-                if (distanceFromUser < minimumDistance) {
-                    minimumDistance = distanceFromUser
-                    neighbourhood = neighbourhoodName
-                }
-            }
-
-            println(">>> INFO: User is in $neighbourhood")
-            currentNeighbourhood = neighbourhood
-        }
-    }
-}
 
 class MainActivity : ComponentActivity() {
     // Declare the location provider client
@@ -140,13 +68,13 @@ class MainActivity : ComponentActivity() {
                     Global.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
 
                     // Get fatality score from csv data
-                    Global.fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
-                    if (Global.fatalityScore == -1.0) {
-                        println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
-                    }
-                    else {
-                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
-                    }
+//                    Global.fatalityScore = getFatalityScore(todayDate.month, Global.currentNeighbourhood)
+//                    if (Global.fatalityScore == -1.0) {
+//                        println(">>> ERROR: Could not retrieve fatality score for ${Global.currentNeighbourhood} for ${todayDate.month}")
+//                    }
+//                    else {
+//                        println(">>> SUCCESS: The fatality score for ${Global.currentNeighbourhood} in ${todayDate.month} is ${Global.fatalityScore}")
+//                    }
 
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)
                     startActivity(navigate)

@@ -9,6 +9,10 @@ class LocationViewModel(application : Application) : AndroidViewModel(applicatio
         return locationLiveData
     }
 
+    fun getLocationNeighbourhoodData () : String {
+        return locationLiveData.getNeighbourhood()
+    }
+
     fun startLocationUpdates () {
         locationLiveData.startLocationUpdates()
     }

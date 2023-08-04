@@ -7,16 +7,23 @@ import android.location.Location
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
-import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import java.io.BufferedReader
 
 class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
+    private var liveNeighbourhood : String = "Territory A"
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     override fun onActive() {
+        // Load the neighbourhood data
+        // TODO: Need to implement a repository class to read CSV
+
+        // Get the live location
         super.onActive()
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -36,6 +43,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
             }
         }
 
+        // Start regular location updates
         startLocationUpdates()
     }
 
@@ -77,12 +85,24 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
 
     // This is a way to declare static objects in Kotlin
     companion object {
-        val ONE_MINUTE : Long = 60000
+        val ONE_MINUTE : Long = 6000
         val locationRequest : LocationRequest = LocationRequest.create().apply {
             interval = ONE_MINUTE
             fastestInterval = ONE_MINUTE/4
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+    }
 
+    private fun setNeighbourhood () {
+        if (liveNeighbourhood == "Territory A") {
+            liveNeighbourhood = "Territory B"
+        }
+        else {
+            liveNeighbourhood = "Territory A"
+        }
+    }
+
+    fun getNeighbourhood () : String{
+        return liveNeighbourhood
     }
 }

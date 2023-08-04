@@ -207,12 +207,14 @@ fun HomeScreen(location : LiveLocation?, safetyTip : String){
                 .padding(20.dp)
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center) {
-                Text (
-                    modifier = Modifier.padding(all = 8.dp),
-                    text = "It looks like you are currently in ${Global.currentNeighbourhood}. $safetyMessage",
-                    style = MaterialTheme.typography.titleSmall,
-                    textAlign = TextAlign.Center
-                )
+                if (location != null) {
+                    Text (
+                        modifier = Modifier.padding(all = 8.dp),
+                        text = "It looks like you are currently in ${location.neighbourHood}. $safetyMessage",
+                        style = MaterialTheme.typography.titleSmall,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 
