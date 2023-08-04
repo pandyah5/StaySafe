@@ -48,7 +48,7 @@ class HomeScreen : ComponentActivity() {
             StaySafeTheme {
                 // Get an instance of the location viewModel to share the lat and lon coordinates
                 val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
-                val location by locationViewModel.getLocationLiveData().observeAsState()
+                val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
 
                 // A box container to set the app background
                 Box (
@@ -66,7 +66,7 @@ class HomeScreen : ComponentActivity() {
                     )
 
                     HomeScreen(
-                        location,
+                        locationInfo,
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
                     )
                 }
@@ -76,29 +76,7 @@ class HomeScreen : ComponentActivity() {
 }
 
 @Composable
-fun HomeScreen(location : LiveLocation?, safetyTip : String){
-    println(">>> INFO: Drafting the safety risk message")
-    var safetyMessage = "TODO"
-//    if (Global.fatalityScore <= 0.2) {
-//        safetyMessage = "The data suggests very low safety risk, however, never let your guard down."
-//    }
-//    else if (0.2 < Global.fatalityScore && Global.fatalityScore <= 0.4) {
-//        safetyMessage = "The data suggests low safety risk, however, never let your guard down."
-//    }
-//    else if (0.4 < Global.fatalityScore && Global.fatalityScore <= 0.6) {
-//        safetyMessage = "The data suggests moderate safety risk, please be vigilant at all times."
-//    }
-//    else if (0.6 < Global.fatalityScore && Global.fatalityScore <= 0.8) {
-//        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
-//    }
-//    else if (0.8 < Global.fatalityScore && Global.fatalityScore <= 1) {
-//        safetyMessage = "The data suggests high safety risk, please consider staying indoors."
-//    }
-//    else {
-//        safetyMessage = "Error in analyzing safety risk."
-//        println(">>> ERROR: Fatality score is not in the expected range. Please debug the error")
-//    }
-
+fun HomeScreen(locationInfo : LiveLocation?, safetyTip : String){
     println(">>> INFO: Building Homescreen!")
     val transparency = 0.5f
 
@@ -154,7 +132,7 @@ fun HomeScreen(location : LiveLocation?, safetyTip : String){
             {
                 Text(
                     text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(
                         top = 15.dp,
@@ -191,30 +169,12 @@ fun HomeScreen(location : LiveLocation?, safetyTip : String){
                 .padding(20.dp)
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center) {
-                if (location != null) {
+                if (locationInfo != null) {
                     Text (
                         modifier = Modifier.padding(all = 8.dp),
-                        text = "It looks like you are currently in ${location.neighbourHood} and the fatality score is ${location.fatalityScore}",
-                        style = MaterialTheme.typography.titleSmall,
+                        text = "It looks like you are currently in ${locationInfo.neighbourHood}. ${locationInfo.safetyMessage}",
+                        style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-
-        // A refresh button
-        Surface (shape = MaterialTheme.shapes.extraLarge,
-            shadowElevation = 1.dp,
-            color = Color.White,
-            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
-        ){
-            Row (horizontalArrangement = Arrangement.Center) {
-                if (location != null) {
-                    Text (
-                        modifier = Modifier.padding(all = 5.dp),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = Color.Black,
-                        text = "Live location ${location.latitude}, ${location.longitude}"
                     )
                 }
             }
@@ -236,7 +196,7 @@ fun HomeScreen(location : LiveLocation?, safetyTip : String){
                 Text(
                     text = "$safetyTip",
                     modifier = Modifier.padding(all = 5.dp),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
             }
