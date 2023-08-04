@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 Button (onClick = {
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)
                     startActivity(navigate)
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image(
                         painterResource(id = R.drawable.armourlogoshieldtransparent),
                         contentDescription = "Armour logo",
