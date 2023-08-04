@@ -39,13 +39,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Get live location of the user
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        val locationRetrieved = fetchLocation()
-        if (!locationRetrieved) {
-            println(">>> ERROR: Failed to retrieve current location in main activity")
-        }
-
         // Get the current date and time of the user
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
         val currentDateTime = sdf.format(Date())
@@ -67,9 +60,6 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button (onClick = {
-                    // Get neighbourhood from GPS coordinates (lat, lon)
-                    GlobalNeighbourhoodLatLonData.setNeighbourhoodFromLatLon(GPSLocation.getLat(), GPSLocation.getLon())
-
                     val navigate = Intent(this@MainActivity, HomeScreen::class.java)
                     startActivity(navigate)
                 }, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
@@ -91,27 +81,6 @@ class MainActivity : ComponentActivity() {
                 Text (text = "Hint: Armour is our four-legged friend!", fontFamily= FontFamily.Serif, fontSize = 12.sp)
             }
         }
-    }
-
-    private fun fetchLocation(): Boolean {
-        val task = fusedLocationProviderClient.lastLocation
-
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-            println(">>> ERROR: Failed to fetch location!")
-            return false
-        }
-        task.addOnSuccessListener {
-            if (it != null){
-                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                GPSLocation.setLat(it.latitude)
-                GPSLocation.setLon(it.longitude)
-                println(">>> SUCCESS: Recorded the current location")
-            }
-        }
-        return true
     }
 
     private fun initializeNeighbourhoodLatLonData() {
@@ -159,20 +128,6 @@ class MainActivity : ComponentActivity() {
         println(">>> INFO: We parsed $count rows in the $monthString.csv file")
         return
     }
-}
-
-// Static object to store the users live GPS coordinates
-object GPSLocation {
-    private var latitude: Double = 1.0
-    private var longitude: Double = -1.0
-
-    // Get functions
-    fun getLat() :Double { return latitude }
-    fun getLon() :Double { return longitude }
-
-    // Set functions
-    fun setLat(Lat: Double) { latitude = Lat }
-    fun setLon(Lon: Double) { longitude = Lon }
 }
 
 object todayDate {
