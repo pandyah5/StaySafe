@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hp.staysafe.data.LiveLocation
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
 class HomeScreen : ComponentActivity() {

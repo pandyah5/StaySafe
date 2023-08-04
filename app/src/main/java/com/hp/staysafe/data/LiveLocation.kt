@@ -1,4 +1,4 @@
-package com.hp.staysafe
+package com.hp.staysafe.data
 
 data class LiveLocation (var latitude: String, var longitude: String) {
     var neighbourHood: String = ""

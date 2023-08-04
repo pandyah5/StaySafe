@@ -1,9 +1,7 @@
 package com.hp.staysafe
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -20,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
+import com.hp.staysafe.data.GlobalNeighbourhoodFatalityData
+import com.hp.staysafe.data.GlobalNeighbourhoodLatLonData
+import com.hp.staysafe.data.neighbourhoodXY
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
@@ -33,9 +31,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
-    // Declare the location provider client
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -1,4 +1,4 @@
-package com.hp.staysafe
+package com.hp.staysafe.data
 
 import kotlin.math.PI
 import kotlin.math.atan2
