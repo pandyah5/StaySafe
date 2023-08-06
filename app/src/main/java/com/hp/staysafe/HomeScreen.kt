@@ -1,5 +1,7 @@
 package com.hp.staysafe
 
+import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,8 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -36,19 +36,29 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hp.staysafe.data.LiveLocation
+import androidx.core.app.ActivityCompat
+import com.hp.staysafe.Location.LiveLocation
+import com.hp.staysafe.Location.LocationService
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
 class HomeScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.POST_NOTIFICATIONS
+            ),
+            0
+        )
 
         setContent {
             StaySafeTheme {
                 // Get an instance of the location viewModel to share the lat and lon coordinates
-                val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
-                val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
+                // val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
+                // val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
 
                 // A box container to set the app background
                 Box (
@@ -66,9 +76,28 @@ class HomeScreen : ComponentActivity() {
                     )
 
                     HomeScreen(
-                        locationInfo,
+                        locationInfo = LiveLocation("1.0", "1.0"),
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
                     )
+
+                    Column {
+                        Button(onClick = {
+                            Intent(applicationContext, LocationService::class.java).apply {
+                                action = LocationService.ACTION_START
+                                startService(this)
+                            }
+                        }) {
+                            Text(text = "Start")
+                        }
+                        Button(onClick = {
+                            Intent(applicationContext, LocationService::class.java).apply {
+                                action = LocationService.ACTION_STOP
+                                startService(this)
+                            }
+                        }) {
+                            Text(text = "Stop")
+                        }
+                    }
                 }
             }
         }

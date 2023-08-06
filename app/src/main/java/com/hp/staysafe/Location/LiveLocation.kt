@@ -1,4 +1,7 @@
-package com.hp.staysafe.data
+package com.hp.staysafe.Location
+
+import com.hp.staysafe.data.GlobalNeighbourhoodFatalityData
+import com.hp.staysafe.data.GlobalNeighbourhoodLatLonData
 
 data class LiveLocation (var latitude: String, var longitude: String) {
     var neighbourHood: String = "Unknown"

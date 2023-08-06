@@ -11,6 +11,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.hp.staysafe.Location.LiveLocation
 
 class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -78,7 +79,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
 
     // This is a way to declare static objects in Kotlin
     companion object {
-        val ONE_MINUTE : Long = 6000
+        val ONE_MINUTE : Long = 60000
         val locationRequest : LocationRequest = LocationRequest.create().apply {
             interval = ONE_MINUTE
             fastestInterval = ONE_MINUTE /4
