@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -202,7 +203,7 @@ fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : Strin
             color = Color.LightGray.copy(alpha = transparency),
             modifier = Modifier.padding(20.dp).align(CenterHorizontally)
         ) {
-            var trackingLocation = remember {mutableStateOf(LocationService.ACTION_START)}
+            var trackingLocation = rememberSaveable {mutableStateOf(LocationService.ACTION_START)}
             Button(onClick = {
                 Intent(context.applicationContext, LocationService::class.java).apply {
                     action = trackingLocation.value
