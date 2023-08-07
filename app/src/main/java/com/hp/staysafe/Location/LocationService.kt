@@ -8,7 +8,6 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import com.hp.staysafe.R
-import com.hp.staysafe.data.LocationLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

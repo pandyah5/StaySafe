@@ -1,4 +1,4 @@
-package com.hp.staysafe.data
+package com.hp.staysafe.Location
 
 import android.Manifest
 import android.content.Context
@@ -11,7 +11,6 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.hp.staysafe.Location.LiveLocation
 
 class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
