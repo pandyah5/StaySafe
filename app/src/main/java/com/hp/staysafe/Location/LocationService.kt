@@ -16,17 +16,36 @@ import kotlinx.coroutines.cancel
 class LocationService: Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     lateinit var locationInfo : LocationLiveData
+    private var notifCount = 0
 
     private val observer = Observer<LiveLocation> { data ->
         // Live data value has changed
-        val notification = NotificationCompat.Builder(this, "location")
-            .setContentTitle("Scanning your neighbourhood for safety...")
-            .setContentText("Current location: ${locationInfo.value?.neighbourHood}")
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setOngoing(true)
+        println(">>> INFO: The fatality score is: ${data.fatalityScore}")
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, notification.build())
+
+        if (data.fatalityScore >= 9 && notifCount == 6) {
+            val notification = NotificationCompat.Builder(this, "safetyAlert")
+                .setContentTitle("ALERT: There is high safety risk in this neighbourhood")
+                .setContentText("Current location: ${locationInfo.value?.neighbourHood}")
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setOngoing(true)
+
+            notificationManager.notify(1, notification.build())
+            notifCount = 0
+        }
+        else if (data.fatalityScore >= 9 && notifCount < 6) {
+            notifCount += 1
+        }
+        else {
+            val notification = NotificationCompat.Builder(this, "locationUpdates")
+                .setContentTitle("Scanning your neighbourhood for safety...")
+                .setContentText("Current location: ${locationInfo.value?.neighbourHood}")
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setOngoing(true)
+
+            notificationManager.notify(1, notification.build())
+        }
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -47,7 +66,7 @@ class LocationService: Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location")
+        val notification = NotificationCompat.Builder(this, "locationUpdates")
             .setContentTitle("Scanning your neighbourhood for safety...")
             .setContentText("Current location: ${locationInfo.value?.neighbourHood}")
             .setSmallIcon(R.drawable.ic_launcher_background)
