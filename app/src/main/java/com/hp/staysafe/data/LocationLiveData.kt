@@ -58,6 +58,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
     private fun setLocationData(location: Location?) {
         location?.let {
             location ->
+            println(">>> INFO: LocationLiveData received coordinates ${location.latitude}, ${location.longitude}")
             value = LiveLocation(location.latitude.toString(), location.longitude.toString())
         }
     }
@@ -79,7 +80,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
 
     // This is a way to declare static objects in Kotlin
     companion object {
-        val ONE_MINUTE : Long = 60000
+        val ONE_MINUTE : Long = 10000
         val locationRequest : LocationRequest = LocationRequest.create().apply {
             interval = ONE_MINUTE
             fastestInterval = ONE_MINUTE /4

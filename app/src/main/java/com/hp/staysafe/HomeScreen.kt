@@ -1,6 +1,7 @@
 package com.hp.staysafe
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,6 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -76,28 +81,10 @@ class HomeScreen : ComponentActivity() {
                     )
 
                     HomeScreen(
+                        applicationContext,
                         locationInfo = LiveLocation("1.0", "1.0"),
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
                     )
-
-                    Column {
-                        Button(onClick = {
-                            Intent(applicationContext, LocationService::class.java).apply {
-                                action = LocationService.ACTION_START
-                                startService(this)
-                            }
-                        }) {
-                            Text(text = "Start")
-                        }
-                        Button(onClick = {
-                            Intent(applicationContext, LocationService::class.java).apply {
-                                action = LocationService.ACTION_STOP
-                                startService(this)
-                            }
-                        }) {
-                            Text(text = "Stop")
-                        }
-                    }
                 }
             }
         }
@@ -105,7 +92,7 @@ class HomeScreen : ComponentActivity() {
 }
 
 @Composable
-fun HomeScreen(locationInfo : LiveLocation?, safetyTip : String){
+fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : String){
     println(">>> INFO: Building Homescreen!")
     val transparency = 0.5f
 
@@ -205,6 +192,35 @@ fun HomeScreen(locationInfo : LiveLocation?, safetyTip : String){
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
+                }
+            }
+        }
+        Surface (shape = MaterialTheme.shapes.extraLarge,
+            shadowElevation = 1.dp,
+            color = Color.LightGray.copy(alpha = transparency),
+            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
+        ) {
+            var trackingLocation = remember {mutableStateOf(LocationService.ACTION_START)}
+            Button(onClick = {
+                Intent(context.applicationContext, LocationService::class.java).apply {
+                    action = trackingLocation.value
+                    context.applicationContext.startService(this)
+                }
+
+                if (trackingLocation.value == LocationService.ACTION_START){
+                    trackingLocation.value = LocationService.ACTION_STOP
+                }
+                else {
+                    trackingLocation.value = LocationService.ACTION_START
+                }
+
+            }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent))
+            {
+                if (trackingLocation.value == LocationService.ACTION_START){
+                    Text(text = "Start tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                }
+                else {
+                    Text(text = "Stop tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
                 }
             }
         }
