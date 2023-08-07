@@ -28,6 +28,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hp.staysafe.Location.LiveLocation
 import com.hp.staysafe.Location.LocationService
 import com.hp.staysafe.ui.theme.StaySafeTheme
@@ -62,8 +65,8 @@ class HomeScreen : ComponentActivity() {
         setContent {
             StaySafeTheme {
                 // Get an instance of the location viewModel to share the lat and lon coordinates
-                // val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
-                // val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
+                val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
+                val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
 
                 // A box container to set the app background
                 Box (
@@ -82,7 +85,7 @@ class HomeScreen : ComponentActivity() {
 
                     HomeScreen(
                         applicationContext,
-                        locationInfo = LiveLocation("1.0", "1.0"),
+                        locationInfo,
                         "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
                     )
                 }
@@ -93,7 +96,6 @@ class HomeScreen : ComponentActivity() {
 
 @Composable
 fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : String){
-    println(">>> INFO: Building Homescreen!")
     val transparency = 0.5f
 
     Column (Modifier.fillMaxHeight(),
