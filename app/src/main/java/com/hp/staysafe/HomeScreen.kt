@@ -45,6 +45,7 @@ import com.hp.staysafe.Location.LiveLocation
 import com.hp.staysafe.Location.LocationService
 import com.hp.staysafe.Location.LocationViewModel
 import com.hp.staysafe.Settings.SettingActivity
+import com.hp.staysafe.Sponsor.SponsorActivity
 import com.hp.staysafe.dataStore.DataStoreManager
 import com.hp.staysafe.dataStore.LocStatusViewModel
 import com.hp.staysafe.ui.theme.StaySafeTheme
@@ -136,7 +137,11 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
                 )
 
                 // Sponsor Button
-                Button (onClick= {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+                Button (onClick= {
+                    val navigate = Intent(context, SponsorActivity::class.java)
+                    navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(navigate)
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image (
                         painterResource(id = R.drawable.gift_icon),
                         contentDescription ="Sponsor heart icon",
