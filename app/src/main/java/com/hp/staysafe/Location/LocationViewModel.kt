@@ -1,4 +1,4 @@
-package com.hp.staysafe
+package com.hp.staysafe.Location
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

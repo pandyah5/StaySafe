@@ -27,13 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -48,9 +43,14 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hp.staysafe.Location.LiveLocation
 import com.hp.staysafe.Location.LocationService
+import com.hp.staysafe.Location.LocationViewModel
+import com.hp.staysafe.dataStore.DataStoreManager
+import com.hp.staysafe.dataStore.LocStatusViewModel
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
 class HomeScreen : ComponentActivity() {
+    private lateinit var dataStoreManager: DataStoreManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCompat.requestPermissions(
@@ -62,6 +62,9 @@ class HomeScreen : ComponentActivity() {
             ),
             0
         )
+
+        // Stores whether the location service is running in the background
+        dataStoreManager = DataStoreManager(this, "locationStatus")
 
         setContent {
             StaySafeTheme {
@@ -96,7 +99,7 @@ class HomeScreen : ComponentActivity() {
 }
 
 @Composable
-fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : String){
+fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String){
     val transparency = 0.5f
 
     Column (Modifier.fillMaxHeight(),
@@ -182,7 +185,9 @@ fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : Strin
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
             color = Color.LightGray.copy(alpha = transparency),
-            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
+            modifier = Modifier
+                .padding(20.dp)
+                .align(CenterHorizontally)
         ) {
             Row (modifier = Modifier
                 .padding(20.dp)
@@ -201,29 +206,40 @@ fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : Strin
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
             color = Color.LightGray.copy(alpha = transparency),
-            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
+            modifier = Modifier
+                .padding(20.dp)
+                .align(CenterHorizontally)
         ) {
-            var trackingLocation = rememberSaveable {mutableStateOf(LocationService.ACTION_START)}
+            val locStatusViewModel = viewModel<LocStatusViewModel>()
+            val locationTrackingStatus = locStatusViewModel.getStatus.observeAsState()
+
+            // var trackingLocation = rememberSaveable {mutableStateOf(LocationService.ACTION_START)}
             Button(onClick = {
+                println(">>> INFO: The current loc status: ${locationTrackingStatus.value}")
+                var actionToPerform = LocationService.ACTION_START
+                if (locationTrackingStatus.value == "ACTIVE") {
+                    actionToPerform = LocationService.ACTION_STOP
+                }
+
                 Intent(context.applicationContext, LocationService::class.java).apply {
-                    action = trackingLocation.value
+                    action = actionToPerform
                     context.applicationContext.startService(this)
                 }
 
-                if (trackingLocation.value == LocationService.ACTION_START){
-                    trackingLocation.value = LocationService.ACTION_STOP
+                if (locationTrackingStatus.value == "ACTIVE"){
+                    locStatusViewModel.setStatus("INACTIVE")
                 }
                 else {
-                    trackingLocation.value = LocationService.ACTION_START
+                    locStatusViewModel.setStatus("ACTIVE")
                 }
 
             }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent))
             {
-                if (trackingLocation.value == LocationService.ACTION_START){
-                    Text(text = "Start tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                if (locationTrackingStatus.value == "ACTIVE"){
+                    Text(text = "Stop tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
                 }
                 else {
-                    Text(text = "Stop tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                    Text(text = "Start tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
                 }
             }
         }
@@ -234,7 +250,9 @@ fun HomeScreen(context: Context, locationInfo : LiveLocation?, safetyTip : Strin
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
             color = Color.LightGray.copy(alpha = transparency),
-            modifier = Modifier.padding(20.dp).align(CenterHorizontally)
+            modifier = Modifier
+                .padding(20.dp)
+                .align(CenterHorizontally)
         ) {
             Row(
                 modifier = Modifier
