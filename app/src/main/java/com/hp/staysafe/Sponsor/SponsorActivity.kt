@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -53,6 +54,9 @@ class SponsorActivity : ComponentActivity() {
 
         setContent {
             StaySafeTheme {
+                // URL Handler to open GitHub repo
+                val uriHandler = LocalUriHandler.current
+
                 // A box container to set the app background color
                 Box(
                     modifier = Modifier
@@ -183,7 +187,8 @@ class SponsorActivity : ComponentActivity() {
                                 .align(Alignment.CenterHorizontally)
                         ) {
                             Button(onClick = {
-                                // To add link to GitHub repo
+                                // To add link to the exact GitHub repo
+                                uriHandler.openUri("https://github.com/pandyah5")
                             }, colors = ButtonDefaults.buttonColors(containerColor = NavyBlue))
                             {
                                 Text(text = "Source code on GitHub", style = MaterialTheme.typography.titleMedium, color = Color.White)
