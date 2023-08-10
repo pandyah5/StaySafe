@@ -37,7 +37,7 @@ class LocationService: Service() {
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setOngoing(true)
 
-            notificationManager.notify(1, notification.build())
+            notificationManager.notify(2, notification.build())
         }
         else {
             val notification = NotificationCompat.Builder(this, "locationUpdates")
