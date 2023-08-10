@@ -100,8 +100,6 @@ class HomeScreen : ComponentActivity() {
 
 @Composable
 fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String){
-    val transparency = 0.5f
-
     Column (Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
@@ -175,6 +173,7 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
                         modifier = Modifier.padding(start = 8.dp, top = 15.dp, end = 8.dp, bottom = 35.dp),
                         text = "It looks like you are currently in ${locationInfo.neighbourHood}. \n\n ${locationInfo.safetyMessage}",
                         style = MaterialTheme.typography.titleLarge,
+                        fontSize = 20.sp,
                         textAlign = TextAlign.Center,
                         color = Color.White
                     )
@@ -185,7 +184,7 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
         Spacer(modifier = Modifier.height(150.dp))
 
         Surface (shape = MaterialTheme.shapes.extraLarge,
-            shadowElevation = 1.dp,
+            shadowElevation = 20.dp,
             color = NavyBlue,
             modifier = Modifier
                 .padding(20.dp)
@@ -248,7 +247,7 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
                     )
                 )
             }
-            Column () {
+            Column {
                 Spacer(
                     modifier = Modifier
                         .height(100.dp)
