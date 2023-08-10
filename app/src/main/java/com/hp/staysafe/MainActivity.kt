@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                     startActivity(navigate)
                 }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Image(
-                        painterResource(id = R.drawable.armourlogoshieldtransparent),
+                        painterResource(id = R.drawable.armourblue),
                         contentDescription = "Armour logo",
                         modifier = Modifier.size(200.dp)
                     )
