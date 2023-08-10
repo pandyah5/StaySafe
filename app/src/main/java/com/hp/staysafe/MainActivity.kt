@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.hp.staysafe.data.GlobalNeighbourhoodFatalityData
 import com.hp.staysafe.data.GlobalNeighbourhoodLatLonData
 import com.hp.staysafe.data.neighbourhoodXY
+import com.hp.staysafe.ui.theme.BabyBlue
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedReader
@@ -49,31 +51,37 @@ class MainActivity : ComponentActivity() {
         initializeFatalityScoreData(todayDate.month)
 
         setContent {
-            Column (
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button (onClick = {
-                    val navigate = Intent(this@MainActivity, HomeScreen::class.java)
-                    startActivity(navigate)
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-                    Image(
-                        painterResource(id = R.drawable.armourblue),
-                        contentDescription = "Armour logo",
-                        modifier = Modifier.size(200.dp)
+            Surface (color = BabyBlue){
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(onClick = {
+                        val navigate = Intent(this@MainActivity, HomeScreen::class.java)
+                        startActivity(navigate)
+                    }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+                        Image(
+                            painterResource(id = R.drawable.armourbluetransparent),
+                            contentDescription = "Armour logo",
+                            modifier = Modifier.size(200.dp)
+                        )
+                    }
+
+                    Text(text = "Toronto Armour", fontFamily = FontFamily.Serif, fontSize = 25.sp)
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(text = "Pat Armour to continue")
+
+                    Spacer(modifier = Modifier.height(150.dp))
+
+                    Text(
+                        text = "Hint: Armour is our four-legged friend!",
+                        fontFamily = FontFamily.Serif,
+                        fontSize = 12.sp
                     )
                 }
-
-                Text (text = "Toronto Armour", fontFamily = FontFamily.Serif, fontSize = 25.sp)
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text (text = "Pat Armour to continue")
-
-                Spacer(modifier = Modifier.height(150.dp))
-
-                Text (text = "Hint: Armour is our four-legged friend!", fontFamily= FontFamily.Serif, fontSize = 12.sp)
             }
         }
     }
