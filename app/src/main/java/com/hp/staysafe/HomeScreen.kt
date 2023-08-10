@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +33,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -48,6 +50,9 @@ import com.hp.staysafe.Settings.SettingActivity
 import com.hp.staysafe.Sponsor.SponsorActivity
 import com.hp.staysafe.dataStore.DataStoreManager
 import com.hp.staysafe.dataStore.LocStatusViewModel
+import com.hp.staysafe.ui.theme.BabyBlue
+import com.hp.staysafe.ui.theme.BlueGrotto
+import com.hp.staysafe.ui.theme.NavyBlue
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
 class HomeScreen : ComponentActivity() {
@@ -75,21 +80,13 @@ class HomeScreen : ComponentActivity() {
                 val locationViewModel: LocationViewModel = viewModel<LocationViewModel>()
                 val locationInfo by locationViewModel.getLocationLiveData().observeAsState()
 
-                // A box container to set the app background
+                // A box container to set the app background color
                 Box (
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black),
+                        .background(BabyBlue),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.toronto_bg),
-                        modifier = Modifier.fillMaxSize(),
-                        contentDescription = "Background Image",
-                        contentScale = ContentScale.Crop,
-                        alpha = 0.4F
-                    )
-
                     HomeScreen(
                         applicationContext,
                         locationInfo,
@@ -106,117 +103,90 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
     val transparency = 0.5f
 
     Column (Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
         // An upper bar for app name and sponsor
         Surface(shadowElevation = 1.dp,
-                color = Color.LightGray.copy(alpha = transparency)) {
+                color = BabyBlue) {
             Row (modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray.copy(alpha = transparency)),
+                .background(BabyBlue),
                 horizontalArrangement = Arrangement.SpaceBetween) {
 
-                // Settings Button
+                // Armour's Icon (Always redirects to Armour's Screen)
                 Button (onClick= {
                     val navigate = Intent(context, SettingActivity::class.java)
                     navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(navigate)
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+                }, colors = ButtonDefaults.buttonColors(containerColor = BabyBlue)) {
                     Image (
-                        painterResource(id = R.drawable.setting_icon),
-                        contentDescription ="Settings icon",
+                        painterResource(id = R.drawable.dog_icon),
+                        contentDescription = "Armour's icon",
                         modifier = Modifier.size(20.dp)
                     )
                 }
 
-                // App Name
-                Text (
-                    text = "Toronto Armour",
-                    fontFamily = FontFamily.Serif,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(all = 8.dp)
-                )
+                // App Name (Always redirects to HomeScreen)
+                Button (onClick= {
+                    val navigate = Intent(context, HomeScreen::class.java)
+                    navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(navigate)
+                }, colors = ButtonDefaults.buttonColors(containerColor = BabyBlue))
+                {
+                        Text(
+                            text = "Toronto Armour",
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            color = Color.Black
+                        )
+                }
 
-                // Sponsor Button
+                // Sponsor Icon (Always redirects to Sponsor Screen)
                 Button (onClick= {
                     val navigate = Intent(context, SponsorActivity::class.java)
                     navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(navigate)
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+                }, colors = ButtonDefaults.buttonColors(containerColor = BabyBlue)) {
                     Image (
                         painterResource(id = R.drawable.gift_icon),
-                        contentDescription ="Sponsor heart icon",
+                        contentDescription ="Sponsor gift icon",
                         modifier = Modifier.size(20.dp)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // A rounded info message introducing 'Armour'
-        BoxWithConstraints {
-            Surface(
-                shape = MaterialTheme.shapes.extraLarge,
-                shadowElevation = 1.dp,
-                color = Color.LightGray.copy(alpha = transparency),
-                modifier = Modifier.padding(20.dp)
-            )
-            {
-                Text(
-                    text = "Hi I am Armour! If you hear a woof, its my way of alerting you!",
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(
-                        top = 15.dp,
-                        bottom = 15.dp,
-                        start = 5.dp,
-                        end = 5.dp
-                    )
-                )
-            }
-            Column () {
-                Spacer(
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(350.dp)
-                )
-                Image(
-                    painterResource(id = R.drawable.armourstanding),
-                    contentDescription = "Armour standing",
-                    modifier = Modifier.size(100.dp)
-                )
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         // Message indicating the safety of current location
-        Surface (shape = MaterialTheme.shapes.extraLarge,
+        Surface (shape = MaterialTheme.shapes.small,
             shadowElevation = 1.dp,
-            color = Color.LightGray.copy(alpha = transparency),
+            color = BlueGrotto,
             modifier = Modifier
-                .padding(20.dp)
+                .padding(0.dp)
                 .align(CenterHorizontally)
+                .clip(shape = RoundedCornerShape(0.dp, 0.dp, 60.dp, 60.dp))
         ) {
             Row (modifier = Modifier
-                .padding(20.dp)
+                .padding(0.dp)
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center) {
                 if (locationInfo != null) {
                     Text (
-                        modifier = Modifier.padding(all = 8.dp),
-                        text = "It looks like you are currently in ${locationInfo.neighbourHood}. ${locationInfo.safetyMessage}",
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
+                        modifier = Modifier.padding(start = 8.dp, top = 15.dp, end = 8.dp, bottom = 35.dp),
+                        text = "It looks like you are currently in ${locationInfo.neighbourHood}. \n\n ${locationInfo.safetyMessage}",
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        color = Color.White
                     )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(150.dp))
+
         Surface (shape = MaterialTheme.shapes.extraLarge,
             shadowElevation = 1.dp,
-            color = Color.LightGray.copy(alpha = transparency),
+            color = NavyBlue,
             modifier = Modifier
                 .padding(20.dp)
                 .align(CenterHorizontally)
@@ -224,7 +194,6 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
             val locStatusViewModel = viewModel<LocStatusViewModel>()
             val locationTrackingStatus = locStatusViewModel.getStatus.observeAsState()
 
-            // var trackingLocation = rememberSaveable {mutableStateOf(LocationService.ACTION_START)}
             Button(onClick = {
                 println(">>> INFO: The current loc status: ${locationTrackingStatus.value}")
                 var actionToPerform = LocationService.ACTION_START
@@ -244,39 +213,56 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
                     locStatusViewModel.setStatus("ACTIVE")
                 }
 
-            }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent))
+            }, colors = ButtonDefaults.buttonColors(containerColor = NavyBlue))
             {
                 if (locationTrackingStatus.value == "ACTIVE"){
-                    Text(text = "Stop tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                    Text(text = "Stop tracking location", style = MaterialTheme.typography.titleMedium, color = Color.White)
                 }
                 else {
-                    Text(text = "Start tracking location", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                    Text(text = "Start tracking location", style = MaterialTheme.typography.titleMedium, color = Color.White)
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         // Tips: Safety tips for the user
-        Surface (shape = MaterialTheme.shapes.extraLarge,
-            shadowElevation = 1.dp,
-            color = Color.LightGray.copy(alpha = transparency),
-            modifier = Modifier
-                .padding(20.dp)
-                .align(CenterHorizontally)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxWidth()
-            ) {
+        BoxWithConstraints {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                shadowElevation = 1.dp,
+                color = BlueGrotto,
+                modifier = Modifier.padding(20.dp)
+            )
+            {
                 Text(
                     text = "$safetyTip",
-                    modifier = Modifier.padding(all = 5.dp),
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    modifier = Modifier.padding(
+                        top = 15.dp,
+                        bottom = 15.dp,
+                        start = 5.dp,
+                        end = 5.dp
+                    )
                 )
             }
+            Column () {
+                Spacer(
+                    modifier = Modifier
+                        .height(100.dp)
+                        .width(350.dp)
+                )
+                Image(
+                    painterResource(id = R.drawable.armourstanding),
+                    contentDescription = "Armour standing",
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }

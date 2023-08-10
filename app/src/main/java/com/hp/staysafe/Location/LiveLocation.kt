@@ -17,11 +17,11 @@ data class LiveLocation (var latitude: String, var longitude: String) {
             fatalityScore = GlobalNeighbourhoodFatalityData.getFatalityScoreFromNeighbourhood(neighbourHood) * 10
 
             when (fatalityScore) {
-                in 0.0..2.0 -> safetyMessage = "The data suggests very low safety risk, however, never let your guard down."
-                in 2.0..4.0 -> safetyMessage = "The data suggests low safety risk, however, never let your guard down."
-                in 4.0..6.0 -> safetyMessage = "The data suggests moderate safety risk, please be vigilant at all times."
-                in 6.0..8.0 -> safetyMessage = "The data suggests high safety risk, please consider staying indoors."
-                in 8.0..10.0 -> safetyMessage = "The data suggests high safety risk, please consider staying indoors."
+                in 0.0..2.0 -> safetyMessage = "The data suggests very low safety risk at this time of the year. However, never let your guard down."
+                in 2.0..4.0 -> safetyMessage = "The data suggests low safety risk at this time of the year. However, never let your guard down."
+                in 4.0..6.0 -> safetyMessage = "The data suggests moderate safety risk at this time of the year. Please be vigilant at all times."
+                in 6.0..8.0 -> safetyMessage = "The data suggests high safety risk at this time of the year. Please consider staying indoors."
+                in 8.0..10.0 -> safetyMessage = "The data suggests very high safety risk at this time of the year. Please consider staying indoors."
             }
         }
         else {
