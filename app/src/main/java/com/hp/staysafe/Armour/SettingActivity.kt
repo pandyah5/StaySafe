@@ -1,4 +1,4 @@
-package com.hp.staysafe.Sponsor
+package com.hp.staysafe.Armour
 
 import android.content.Intent
 import android.os.Bundle
@@ -29,30 +29,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hp.staysafe.Armour.ArmourActivity
 import com.hp.staysafe.HomeScreen
 import com.hp.staysafe.R
+import com.hp.staysafe.Sponsor.SponsorActivity
 import com.hp.staysafe.ui.theme.BabyBlue
 import com.hp.staysafe.ui.theme.BlueGrotto
-import com.hp.staysafe.ui.theme.NavyBlue
 import com.hp.staysafe.ui.theme.StaySafeTheme
 
-class SponsorActivity : ComponentActivity() {
+class ArmourActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             StaySafeTheme {
-                // URL Handler to open GitHub repo
-                val uriHandler = LocalUriHandler.current
-
-                // A box container to set the app background color
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -79,11 +72,11 @@ class SponsorActivity : ComponentActivity() {
                                 Button(
                                     onClick = {
                                         val navigate = Intent(
-                                            this@SponsorActivity,
+                                            this@ArmourActivity,
                                             ArmourActivity::class.java
                                         )
                                         navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        this@SponsorActivity.startActivity(navigate)
+                                        this@ArmourActivity.startActivity(navigate)
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = BabyBlue)
                                 ) {
@@ -97,9 +90,9 @@ class SponsorActivity : ComponentActivity() {
                                 // App Name (Always redirects to HomeScreen)
                                 Button(onClick = {
                                     val navigate =
-                                        Intent(this@SponsorActivity, HomeScreen::class.java)
+                                        Intent(this@ArmourActivity, HomeScreen::class.java)
                                     navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    this@SponsorActivity.startActivity(navigate)
+                                    this@ArmourActivity.startActivity(navigate)
                                 }, colors = ButtonDefaults.buttonColors(containerColor = BabyBlue))
                                 {
                                     Text(
@@ -115,11 +108,11 @@ class SponsorActivity : ComponentActivity() {
                                 Button(
                                     onClick = {
                                         val navigate = Intent(
-                                            this@SponsorActivity,
+                                            this@ArmourActivity,
                                             SponsorActivity::class.java
                                         )
                                         navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        this@SponsorActivity.startActivity(navigate)
+                                        this@ArmourActivity.startActivity(navigate)
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = BabyBlue)
                                 ) {
@@ -132,7 +125,7 @@ class SponsorActivity : ComponentActivity() {
                             }
                         }
 
-                        // Text giving a brief intro message about supporting me
+                        // Text giving a brief intro about Armour
                         BoxWithConstraints {
                             Surface(
                                 shape = MaterialTheme.shapes.small,
@@ -140,7 +133,14 @@ class SponsorActivity : ComponentActivity() {
                                 color = BlueGrotto,
                                 modifier = Modifier
                                     .padding(0.dp)
-                                    .clip(shape = RoundedCornerShape(0.dp, 0.dp, 60.dp, 60.dp))
+                                    .clip(
+                                        shape = RoundedCornerShape(
+                                            0.dp,
+                                            0.dp,
+                                            60.dp,
+                                            60.dp
+                                        )
+                                    )
                             ) {
                                 Text(
                                     modifier = Modifier.padding(
@@ -149,9 +149,9 @@ class SponsorActivity : ComponentActivity() {
                                         end = 35.dp,
                                         bottom = 35.dp
                                     ),
-                                    text = "Hi! Armour here. Thank you for considering to support HP, the creator of this app.\n" +
-                                            "\nThis is a free and open-source initiative and it will remain so." +
-                                            "If you wish to help HP improve this app please consider following him and staring his project on GitHub",
+                                    text = "Hi! My name is Armour. I am a German Shepherd trained on the data supplied by Toronto Police Service’s Public Safety Data Portal.\n" +
+                                            "\n" +
+                                            "This app was built by my friend HP who loves exploring the city of Toronto by himself. ",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 20.sp,
                                     textAlign = TextAlign.Center,
@@ -161,7 +161,7 @@ class SponsorActivity : ComponentActivity() {
                             Column() {
                                 Spacer(
                                     modifier = Modifier
-                                        .height(260.dp)
+                                        .height(220.dp)
                                         .width(350.dp)
                                 )
                                 Image(
@@ -172,47 +172,50 @@ class SponsorActivity : ComponentActivity() {
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(70.dp))
-
-                        Surface (shape = MaterialTheme.shapes.extraLarge,
-                            shadowElevation = 20.dp,
-                            color = NavyBlue,
-                            modifier = Modifier
-                                .padding(20.dp)
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            Button(onClick = {
-                                // To add link to the exact GitHub repo
-                                uriHandler.openUri("https://github.com/pandyah5")
-                            }, colors = ButtonDefaults.buttonColors(containerColor = NavyBlue))
-                            {
-                                Text(text = "Source code on GitHub", style = MaterialTheme.typography.titleMedium, color = Color.White)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.height(50.dp))
 
                         Surface(
-                            shape = MaterialTheme.shapes.small,
+                            shape = MaterialTheme.shapes.extraLarge,
                             shadowElevation = 1.dp,
                             color = BlueGrotto,
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .clip(shape = RoundedCornerShape(60.dp, 60.dp, 0.dp, 0.dp))
-                        ) {
+                            modifier = Modifier.padding(20.dp)
+                        )
+                        {
                             Text(
-                                modifier = Modifier.padding(
-                                    start = 35.dp,
-                                    top = 15.dp,
-                                    end = 35.dp,
-                                    bottom = 15.dp
-                                ),
-                                text = "HP does not expect any monetary compensation.\n\n" +
-                                        " However, if you really want to support him monetarily you can do so by sponsoring him on GitHub!",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontSize = 20.sp,
+                                text = "But HP gets really concerned when he hears news about shootings in Toronto. \n" +
+                                        "\n" +
+                                        "He wanted to raise a German Shepherd (like me) who could make him feel safe.\n",
+                                style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.padding(
+                                    top = 15.dp,
+                                    bottom = 15.dp,
+                                    start = 10.dp,
+                                    end = 10.dp
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Surface(
+                            shape = MaterialTheme.shapes.extraLarge,
+                            shadowElevation = 1.dp,
+                            color = BlueGrotto,
+                            modifier = Modifier.padding(20.dp)
+                        ){
+                            Text(
+                                text = "Unfortunately, he is still a student and can barely take care of himself. So rather he made this app!",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                color = Color.White,
+                                modifier = Modifier.padding(
+                                    top = 15.dp,
+                                    bottom = 15.dp,
+                                    start = 10.dp,
+                                    end = 10.dp
+                                )
                             )
                         }
                     }

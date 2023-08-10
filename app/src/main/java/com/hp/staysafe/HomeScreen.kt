@@ -3,9 +3,11 @@ package com.hp.staysafe
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +37,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -43,10 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hp.staysafe.Armour.ArmourActivity
 import com.hp.staysafe.Location.LiveLocation
 import com.hp.staysafe.Location.LocationService
 import com.hp.staysafe.Location.LocationViewModel
-import com.hp.staysafe.Settings.SettingActivity
 import com.hp.staysafe.Sponsor.SponsorActivity
 import com.hp.staysafe.dataStore.DataStoreManager
 import com.hp.staysafe.dataStore.LocStatusViewModel
@@ -58,6 +59,7 @@ import com.hp.staysafe.ui.theme.StaySafeTheme
 class HomeScreen : ComponentActivity() {
     private lateinit var dataStoreManager: DataStoreManager
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCompat.requestPermissions(
@@ -113,7 +115,7 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
 
                 // Armour's Icon (Always redirects to Armour's Screen)
                 Button (onClick= {
-                    val navigate = Intent(context, SettingActivity::class.java)
+                    val navigate = Intent(context, ArmourActivity::class.java)
                     navigate.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(navigate)
                 }, colors = ButtonDefaults.buttonColors(containerColor = BabyBlue)) {
