@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        println(">>> SUCCESS: Added $count neighbourhood entries in entrees")
+        // println(">>> SUCCESS: Added $count neighbourhood entries in entrees")
     }
     private fun initializeFatalityScoreData(month:Int) {
         var monthString = ""
@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        println(">>> INFO: We parsed $count rows in the $monthString.csv file")
+        // println(">>> INFO: We parsed $count rows in the $monthString.csv file")
         return
     }
 }

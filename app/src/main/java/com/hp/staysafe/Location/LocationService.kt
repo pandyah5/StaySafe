@@ -68,7 +68,7 @@ class LocationService: Service() {
     }
 
     private fun start() {
-        println(">>> INFO: Notification service is started")
+        // println(">>> INFO: Notification service is started")
         val notification = NotificationCompat.Builder(this, "locationUpdates")
             .setContentTitle("Scanning your neighbourhood for safety...")
             .setContentText("Current location: ${locationInfo.value?.neighbourHood}")
@@ -82,7 +82,7 @@ class LocationService: Service() {
     }
 
     private fun stop() {
-        println(">>> INFO: Notification service is stopped")
+        // println(">>> INFO: Notification service is stopped")
         locationInfo.removeObserver(observer)
         stopForeground(true)
         stopSelf()

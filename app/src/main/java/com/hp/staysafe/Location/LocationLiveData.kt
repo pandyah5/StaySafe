@@ -57,7 +57,7 @@ class LocationLiveData (var context: Context) : LiveData<LiveLocation> () {
     private fun setLocationData(location: Location?) {
         location?.let {
             location ->
-            println(">>> INFO: LocationLiveData received coordinates ${location.latitude}, ${location.longitude}")
+            // println(">>> INFO: LocationLiveData received coordinates ${location.latitude}, ${location.longitude}")
             value = LiveLocation(location.latitude.toString(), location.longitude.toString())
         }
     }

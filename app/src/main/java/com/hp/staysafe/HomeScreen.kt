@@ -197,7 +197,7 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
             val locationTrackingStatus = locStatusViewModel.getStatus.observeAsState()
 
             Button(onClick = {
-                println(">>> INFO: The current loc status: ${locationTrackingStatus.value}")
+                // println(">>> INFO: The current loc status: ${locationTrackingStatus.value}")
                 var actionToPerform = LocationService.ACTION_START
                 if (locationTrackingStatus.value == "ACTIVE") {
                     actionToPerform = LocationService.ACTION_STOP

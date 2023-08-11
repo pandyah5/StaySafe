@@ -18,7 +18,8 @@ public class safetyTipData() {
         )
 
         fun getSafetyTip(): String {
-            var randomIndex = (0..11).random()
+            var upperLimit = safetyTipsList.size - 1
+            var randomIndex = (0..upperLimit).random()
             return safetyTipsList[randomIndex]
         }
     }

@@ -34,7 +34,7 @@ public class GlobalNeighbourhoodLatLonData () {
         }
 
         fun setNeighbourhoodFromLatLon(lat: Double, lon: Double) : String {
-            println(">>> INFO: Searching neighbourhood near Lat: $lat, Lon: $lon")
+            // println(">>> INFO: Searching neighbourhood near Lat: $lat, Lon: $lon")
             var neighbourhood: String = "Agincourt North"
             var minimumDistance: Double = 10000.0
 
@@ -53,7 +53,7 @@ public class GlobalNeighbourhoodLatLonData () {
                 }
             }
 
-            println(">>> INFO: User is in $neighbourhood")
+            // println(">>> INFO: User is in $neighbourhood")
             return neighbourhood
         }
     }
