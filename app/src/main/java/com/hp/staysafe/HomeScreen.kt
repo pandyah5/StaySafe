@@ -49,6 +49,7 @@ import com.hp.staysafe.Location.LiveLocation
 import com.hp.staysafe.Location.LocationService
 import com.hp.staysafe.Location.LocationViewModel
 import com.hp.staysafe.Sponsor.SponsorActivity
+import com.hp.staysafe.data.safetyTipData
 import com.hp.staysafe.dataStore.DataStoreManager
 import com.hp.staysafe.dataStore.LocStatusViewModel
 import com.hp.staysafe.ui.theme.BabyBlue
@@ -92,7 +93,7 @@ class HomeScreen : ComponentActivity() {
                     HomeScreen(
                         applicationContext,
                         locationInfo,
-                        "Safety Tip: Data suggests that morning is the safest time of the day, so don’t shy away from your morning walks!"
+                        safetyTipData.getSafetyTip()
                     )
                 }
             }
@@ -244,8 +245,8 @@ fun HomeScreen(context: Context,locationInfo : LiveLocation?, safetyTip : String
                     modifier = Modifier.padding(
                         top = 15.dp,
                         bottom = 15.dp,
-                        start = 5.dp,
-                        end = 5.dp
+                        start = 10.dp,
+                        end = 10.dp
                     )
                 )
             }
