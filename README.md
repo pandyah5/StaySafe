@@ -9,7 +9,7 @@ Alternatively, the user can also open the app to check the safety risk level of 
 # How to use it?
 When you open the application you will always end up at the "Loading screen" (See images below). When you tap on the Armour icon, it takes you to the "home screen". This is where all information is provided to you. On the top, you shall see a message indicating the safety risk at your current location.
 
-In the middle of the page, you will have the option to start or stop location tracking. When you begin location tracking, Armour is able to track your location even after you exit from the app. Why do we need this? Quite simply, it will help us to alert you via a notification if you are at a location that has a high safety risk! We do not store your location data in any database or derive any analytics from it, don't believe me, check the source code 😄
+In the middle of the page, you will have the option to start or stop location tracking. When you begin location tracking, Armour is able to track your location even after you exit from the app. Why do we need this? Quite simply, because it will help us to alert you via a notification if you are at a location that has a high safety risk! We do not store your location data in any database or derive any analytics from it 😄. Additionally whenever we track the live location, you can see it via a persistent notification on your notification panel. This is required by Google to make sure that the user is aware that their location is being used by the application.
 
 At the bottom of the "home screen", you will see a randomly selected safety tip. These safety tips were derived from the Toronto Police Firearms and Shooting Dataset. We will keep them updated when we get new data.
 
