@@ -6,6 +6,8 @@ The theme is of a dog named 'Armour' 🐕‍🦺. He is a loyal companion who wi
 
 Alternatively, the user can also open the app to check the safety risk level of their current location. This is an open-source app as the goal of this project is to help me and my friends safely commute to our workplaces and universities. If however, you wish to show your gratitude, you can do so by hitting the 'star' button on this repository or considering sponsoring my effort through GitHub's sponsor program :octocat:
 
+Currently, this application is only available for Toronto, however, if we get more city-specific data we can extend it to cover many cities. More details will arrive soon in CONTRIBUTION.md
+
 # How to use it❔
 When you open the application you will always end up at the "Loading screen" (See images below). When you tap on the Armour icon 🦮, it takes you to the "home screen". This is where all information is provided to you. On the top, you shall see a message indicating the safety risk at your current location 📍.
 
